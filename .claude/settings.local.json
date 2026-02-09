@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del:*)",
+      "Bash(Remove-Item \"C:\\\\ProyectosClaudeCode\\\\sound-weaver\\\\src\\\\components\\\\MusicGenerator.jsx\")",
+      "Bash(git add:*)"
+    ]
+  }
+}

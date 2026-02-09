@@ -1,0 +1,372 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Backgrounds - macOS Dark Mode */
+  --bg-primary: #1C1C1E;
+  --bg-secondary: #2C2C2E;
+  --bg-card: #2C2C2E;
+  --bg-hover: #3A3A3C;
+  --bg-active: #48484A;
+
+  /* macOS Window Button Colors */
+  --macos-red: #FF5F57;
+  --macos-yellow: #FEBC2E;
+  --macos-green: #28C840;
+
+  /* Accent Colors */
+  --accent-blue: #0A84FF;
+  --accent-purple: #BF5AF2;
+  --accent-pink: #FF375F;
+  --accent-orange: #FF9F0A;
+
+  /* Text - Dark Mode */
+  --text-primary: #FFFFFF;
+  --text-secondary: #EBEBF5;
+  --text-muted: #8E8E93;
+
+  /* Borders */
+  --border-color: #38383A;
+  --border-accent: rgba(10, 132, 255, 0.3);
+
+  /* Shadows */
+  --shadow-macos: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-macos-strong: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-colored: 0 0 20px rgba(10, 132, 255, 0.3);
+
+  /* Gradients */
+  --gradient-macos: linear-gradient(135deg, #FF5F57 0%, #FEBC2E 50%, #28C840 100%);
+  --gradient-blue: linear-gradient(135deg, #0A84FF 0%, #BF5AF2 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar - macOS Dark Style */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-active);
+  border-radius: 5px;
+  border: 2px solid var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* macOS Button Style */
+.btn-macos {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-macos);
+}
+
+.btn-macos:hover {
+  background: var(--bg-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-macos-strong);
+}
+
+.btn-macos:active {
+  transform: translateY(0);
+}
+
+.btn-macos:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Primary Button - Blue Accent */
+.btn-primary {
+  background: var(--accent-blue);
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-macos);
+}
+
+.btn-primary:hover {
+  background: #0066CC;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-macos-strong);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Gradient Button - macOS Colors */
+.btn-gradient {
+  background: var(--gradient-macos);
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-colored);
+}
+
+.btn-gradient:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 30px rgba(255, 95, 87, 0.4);
+}
+
+/* Outline Button */
+.btn-outline {
+  background: transparent;
+  color: var(--accent-blue);
+  border: 1.5px solid var(--accent-blue);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: var(--accent-blue);
+  color: #FFFFFF;
+}
+
+/* Card - macOS Dark Style */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-macos);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-macos-strong);
+  border-color: var(--accent-blue);
+}
+
+/* Input - macOS Dark Style */
+.input {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  border-radius: 10px;
+  width: 100%;
+  transition: all 0.2s ease;
+  font-size: 15px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.15);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Select - macOS Dark Style */
+.select {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  border-radius: 10px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 15px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%238E8E93'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+  padding-right: 40px;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.15);
+}
+
+.select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Textarea - macOS Dark Style */
+.textarea {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  border-radius: 10px;
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.15);
+}
+
+/* Loading Spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* macOS Window Buttons */
+.window-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.window-button {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.window-button-close {
+  background: var(--macos-red);
+}
+
+.window-button-minimize {
+  background: var(--macos-yellow);
+}
+
+.window-button-maximize {
+  background: var(--macos-green);
+}
+
+.window-button:hover {
+  filter: brightness(0.9);
+}
+
+/* Gradient Text - macOS Colors */
+.gradient-text {
+  background: var(--gradient-macos);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-blue {
+  background: var(--gradient-blue);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Link - macOS Dark Style */
+.link {
+  color: var(--accent-blue);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #409CFF;
+  text-decoration: underline;
+}
+
+/* macOS Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.badge-yellow {
+  background: rgba(254, 188, 46, 0.15);
+  color: #FEBC2E;
+  border-color: rgba(254, 188, 46, 0.3);
+}
+
+.badge-green {
+  background: rgba(40, 200, 64, 0.15);
+  color: #28C840;
+  border-color: rgba(40, 200, 64, 0.3);
+}
+
+.badge-red {
+  background: rgba(255, 95, 87, 0.15);
+  color: #FF5F57;
+  border-color: rgba(255, 95, 87, 0.3);
+}
+
+/* macOS Progress Bar */
+.progress-bar {
+  height: 6px;
+  background: var(--bg-hover);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent-blue);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-bar-fill-gradient {
+  background: var(--gradient-macos);
+}
