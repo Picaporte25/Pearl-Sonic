@@ -4,31 +4,46 @@ import Layout from '@/components/Layout';
 
 // Client-side function to get token from cookies
 function getTokenFromClient() {
-  if (typeof document === 'undefined' || !document.cookie) {
-    console.log('Document or cookie not available');
+  if (typeof document === 'undefined') {
+    console.log('Document not available (server side)');
     return null;
   }
   const cookies = document.cookie || '';
+  console.log('Raw cookies:', cookies);
   const tokenMatch = cookies.match(/token=([^;]+)/);
   const token = tokenMatch ? tokenMatch[1] : null;
-  console.log('Token found:', !!token);
+  console.log('Token extracted:', token ? 'YES' : 'NO');
   return token;
 }
 
 export default function Home() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    checkAuth();
+    console.log('Component mounted');
+    setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    // Small delay to ensure cookies are available
+    const timer = setTimeout(() => {
+      checkAuth();
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [mounted]);
 
   const checkAuth = async () => {
     try {
+      console.log('Checking auth...');
       const token = getTokenFromClient();
 
       if (token) {
-        console.log('Calling /api/auth/verify...');
+        console.log('Token found, calling /api/auth/verify...');
         const response = await fetch('/api/auth/verify');
 
         // Handle empty response
@@ -43,7 +58,7 @@ export default function Home() {
         console.log('Verify response:', response.status, data);
 
         if (response.ok && data.user) {
-          console.log('User set:', data.user);
+          console.log('User set successfully:', data.user);
           setUser(data.user);
         } else {
           console.log('Verify failed:', response.status, data);
