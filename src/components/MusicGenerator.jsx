@@ -1,215 +1,230 @@
-import { useState } from "react";
-import TrackCard from "./TrackCard";
-
-const GENRES = [
-  "Rock", "Pop", "Electronic", "Classical", "Jazz", "Hip-Hop", "R&B",
-  "Country", "Folk", "Blues", "Reggae", "Metal", "Punk", "Soul", "Funk"
-];
-
-const MOODS = [
-  "Energetic", "Chill", "Sad", "Happy", "Dramatic", "Romantic",
-  "Dark", "Peaceful", "Epic", "Mysterious", "Playful", "Intense"
-];
-
-const DURATIONS = [
-  { value: 30, label: "30 seconds" },
-  { value: 60, label: "1 minute" },
-  { value: 120, label: "2 minutes" },
-  { value: 180, label: "3 minutes" },
-];
+import { useState } from 'react';
+import { useRouter } from 'next/router';
 
 export default function MusicGenerator({ userCredits, onCreditUpdate }) {
-  const [prompt, setPrompt] = useState("");
-  const [genre, setGenre] = useState("Electronic");
-  const [mood, setMood] = useState("Chill");
-  const [duration, setDuration] = useState(60);
+  const router = useRouter();
+  const [prompt, setPrompt] = useState('');
+  const [duration, setDuration] = useState(120);
+  const [forceInstrumental, setForceInstrumental] = useState(false);
+  const [outputFormat, setOutputFormat] = useState('mp3_44100_128');
   const [generating, setGenerating] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handleGenerate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
+
     if (!prompt.trim()) {
-      setError("Please write a description for your music");
+      setError('Please enter a description');
       return;
     }
-    if (userCredits < 2) {
-      setError("Not enough credits. You need 2 credits per song.");
+
+    const requiredCredits = Math.ceil(duration / 60);
+    if (userCredits < requiredCredits) {
+      setError('Not enough credits. Please purchase more credits to generate music.');
       return;
     }
+
     setGenerating(true);
-    setError("");
+
     try {
-      const response = await fetch("/api/music/generate", {
-        method: "POST",
+      const response = await fetch('/api/music/generate', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt, genre, mood, duration }),
+        body: JSON.stringify({
+          prompt: prompt.trim(),
+          duration: duration * 1000, // Convert to milliseconds
+          forceInstrumental,
+          outputFormat,
+        }),
       });
+
       const data = await response.json();
+
       if (!response.ok) {
-        throw new Error(data.error || "Error generating music");
+        if (response.status === 402) {
+          setError('Not enough credits. Please purchase more credits to generate music.');
+          router.push('/checkout');
+          return;
+        }
+        throw new Error(data.error || 'Failed to generate music');
       }
-      setCurrentTrack({
-        _id: data.trackId,
-        jobId: data.jobId,
-        status: "generating",
-        progress: 0,
-        title: genre + " - " + mood,
-        description: prompt,
-        genre,
-        mood,
-        duration,
-        createdAt: new Date(),
-      });
-      pollTrackStatus(data.trackId);
-      if (onCreditUpdate) {
-        onCreditUpdate(data.remainingCredits);
-      }
+
+      setSuccess('Music generation started! Check your history for the result.');
+      onCreditUpdate(data.remainingCredits);
+      setPrompt('');
+
+      // Redirect to history after a short delay
+      setTimeout(() => {
+        router.push('/history');
+      }, 1500);
+
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Failed to generate music. Please try again.');
     } finally {
       setGenerating(false);
     }
   };
 
-  const pollTrackStatus = async (trackId) => {
-    const poll = setInterval(async () => {
-      try {
-        const response = await fetch("/api/music/status?trackId=" + trackId);
-        const data = await response.json();
-        if (data.status === "completed" || data.status === "failed") {
-          clearInterval(poll);
-          setCurrentTrack((prev) => {
-            return {
-              ...prev,
-              status: data.status,
-              audioUrl: data.audioUrl,
-              coverUrl: data.coverUrl,
-              title: data.title || prev?.title,
-              progress: 100,
-            };
-          });
-        } else {
-          setCurrentTrack((prev) => {
-            return {
-              ...prev,
-              progress: data.progress || 0,
-            };
-          });
-        }
-      } catch (err) {
-        clearInterval(poll);
-        console.error("Error polling status:", err);
-      }
-    }, 3000);
-    setTimeout(() => {
-      clearInterval(poll);
-    }, 300000);
-  };
-
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="card mb-8">
-        <div className="flex items-center gap-2 mb-6">
-          <div className="window-buttons">
-            <button className="window-button window-button-close"></button>
-            <button className="window-button window-button-minimize"></button>
-            <button className="window-button window-button-maximize"></button>
-          </div>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 bg-clip-text text-transparent">
-            Create New Song
-          </h2>
+    <div className="card">
+      <h2 className="text-2xl font-semibold mb-6 text-white">Create Your Music</h2>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Prompt Input */}
+        <div>
+          <label htmlFor="prompt" className="block text-sm font-medium text-gray-300 mb-2">
+            Describe your music *
+          </label>
+          <textarea
+            id="prompt"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="e.g., A calm lo-fi beat with soft piano melodies and rain sounds..."
+            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+            rows={4}
+            disabled={generating}
+          />
         </div>
 
+        {/* Duration */}
+        <div>
+          <label htmlFor="duration" className="block text-sm font-medium text-gray-300 mb-2">
+            Duration: {duration} seconds
+          </label>
+          <input
+            type="range"
+            id="duration"
+            min={10}
+            max={600}
+            step={10}
+            value={duration}
+            onChange={(e) => setDuration(parseInt(e.target.value))}
+            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+            disabled={generating}
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>10s</span>
+            <span>10min</span>
+          </div>
+        </div>
+
+        {/* Options Grid */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Instrumental Toggle */}
+          <div className="flex items-center space-x-3">
+            <input
+              type="checkbox"
+              id="instrumental"
+              checked={forceInstrumental}
+              onChange={(e) => setForceInstrumental(e.target.checked)}
+              className="w-5 h-5 bg-gray-800 border-gray-700 rounded text-indigo-500 focus:ring-indigo-500"
+              disabled={generating}
+            />
+            <label htmlFor="instrumental" className="text-sm text-gray-300">
+              Instrumental only
+            </label>
+          </div>
+
+          {/* Output Format */}
+          <div>
+            <label htmlFor="format" className="block text-sm font-medium text-gray-300 mb-2">
+              Format
+            </label>
+            <select
+              id="format"
+              value={outputFormat}
+              onChange={(e) => setOutputFormat(e.target.value)}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              disabled={generating}
+            >
+              <option value="mp3_44100_128">MP3 (128kbps)</option>
+              <option value="mp3_44100_192">MP3 (192kbps)</option>
+              <option value="wav_44100_16">WAV (16-bit)</option>
+              <option value="wav_48000_24">WAV (24-bit)</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Cost Display */}
+        <div className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 border border-indigo-700/50 rounded-lg px-5 py-4">
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <p className="text-xs text-gray-400 mb-1">Duration</p>
+              <p className="text-lg font-semibold text-white">
+                {duration < 60 ? `${duration}s` : `${Math.floor(duration / 60)}min${duration % 60 > 0 ? ` ${duration % 60}s` : ''}`}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-400 mb-1">Credits</p>
+              <p className={`text-lg font-semibold ${userCredits >= Math.ceil(duration / 60) ? 'text-green-400' : 'text-red-400'}`}>
+                {Math.ceil(duration / 60)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-400 mb-1">Cost (USD)</p>
+              <p className="text-lg font-semibold text-indigo-300">
+                ${(duration * 0.041666666666666664).toFixed(2)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Credits Display */}
+        <div className="bg-gray-800/50 rounded-lg px-4 py-3 flex items-center justify-between">
+          <span className="text-sm text-gray-400">Credits available:</span>
+          <span className={`font-semibold ${userCredits >= Math.ceil(duration / 60) ? 'text-green-400' : 'text-red-400'}`}>
+            {userCredits}
+          </span>
+        </div>
+
+        {/* Messages */}
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-6">
-            {error}
+          <div className="bg-red-900/20 border border-red-800 rounded-lg px-4 py-3">
+            <p className="text-sm text-red-400">{error}</p>
           </div>
         )}
 
-        <div className="mb-6">
-          <label className="block text-gray-400 mb-2 font-medium">
-            Describe your music <span className="text-yellow-500">*</span>
-          </label>
-          <textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Eg: A relaxing song with acoustic guitar and piano, soft and melodic..."
-            className="textarea"
-            rows={3}
-          ></textarea>
-        </div>
-
-        <div className="grid sm:grid-cols-3 gap-4 mb-6">
-          <div>
-            <label className="block text-gray-400 mb-2 font-medium">Genre</label>
-            <select value={genre} onChange={(e) => setGenre(e.target.value)} className="select">
-              {GENRES.map((g) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-            </select>
+        {success && (
+          <div className="bg-green-900/20 border border-green-800 rounded-lg px-4 py-3">
+            <p className="text-sm text-green-400">{success}</p>
           </div>
+        )}
 
-          <div>
-            <label className="block text-gray-400 mb-2 font-medium">Mood</label>
-            <select value={mood} onChange={(e) => setMood(e.target.value)} className="select">
-              {MOODS.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-gray-400 mb-2 font-medium">Duration</label>
-            <select value={duration} onChange={(e) => setDuration(Number(e.target.value))} className="select">
-              {DURATIONS.map((d) => (
-                <option key={d.value} value={d.value}>
-                  {d.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
+        {/* Submit Button */}
         <button
-          onClick={handleGenerate}
-          disabled={generating || userCredits < 2}
-          className="btn-gradient w-full text-lg py-4"
+          type="submit"
+          disabled={generating || !prompt.trim()}
+          className="btn-primary w-full flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {generating ? (
-            <span className="flex items-center justify-center gap-2">
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Generating...
-            </span>
-          ) : userCredits < 2 ? (
-            `Insufficient credits (${userCredits}/2)`
+            <>
+              <div className="spinner-small" />
+              <span>Generating...</span>
+            </>
           ) : (
-            `Generate Music (2 credits)`
+            <>
+              <span>Start Creating</span>
+              <span className="text-sm opacity-75">(${(duration * 0.041666666666666664).toFixed(2)} USD - {Math.ceil(duration / 60)} credit{Math.ceil(duration / 60) !== 1 ? 's' : ''})</span>
+            </>
           )}
         </button>
-      </div>
+      </form>
 
-      {currentTrack && (
-        <div className="card">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="window-buttons">
-              <button className="window-button window-button-close"></button>
-              <button className="window-button window-button-minimize"></button>
-              <button className="window-button window-button-maximize"></button>
-            </div>
-            <h3 className="text-xl font-semibold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-              Generation in Progress
-            </h3>
-          </div>
-          <TrackCard track={currentTrack} />
-        </div>
-      )}
+      {/* Tips */}
+      <div className="mt-6 pt-6 border-t border-gray-700">
+        <h3 className="text-sm font-medium text-gray-300 mb-2">Tips for better results:</h3>
+        <ul className="text-xs text-gray-500 space-y-1 list-disc list-inside">
+          <li>Be specific about the genre, mood, and instruments</li>
+          <li>Describe the tempo (fast, slow, moderate)</li>
+          <li>Mention influences or artists you like</li>
+          <li>Use instrumental only for background music</li>
+        </ul>
+      </div>
     </div>
   );
 }

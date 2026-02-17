@@ -3,7 +3,10 @@
     "allow": [
       "Bash(del:*)",
       "Bash(Remove-Item \"C:\\\\ProyectosClaudeCode\\\\sound-weaver\\\\src\\\\components\\\\MusicGenerator.jsx\")",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(grep:*)"
     ]
   }
 }

@@ -7,11 +7,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // macOS Window Button Colors
+        // macOS Window Button Colors - Violet, Pink, Cyan Gradient
         macos: {
-          red: '#FF5F57',
-          yellow: '#FEBC2E',
-          green: '#28C840',
+          red: '#8B5CF6',
+          yellow: '#EC4899',
+          green: '#06B6D4',
         },
         // Gray Scale - macOS inspired
         gray: {

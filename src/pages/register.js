@@ -42,9 +42,7 @@ export default function RegisterPage() {
         throw new Error(data.error || 'Error registering');
       }
 
-      // Save token in cookie
-      document.cookie = `token=${data.token}; path=/; max-age=604800`; // 7 days
-
+      // Cookie is now set by the server with security flags
       router.push('/generate');
     } catch (err) {
       setError(err.message);
@@ -54,7 +52,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <Layout title="Sign Up - Sound-Weaver">
+    <Layout title="Sign Up - Sonic-Wave">
       <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           <div className="card">
@@ -64,12 +62,12 @@ export default function RegisterPage() {
                 <button className="window-button window-button-minimize" />
                 <button className="window-button window-button-maximize" />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent">
                 Create Account
               </h1>
             </div>
             <p className="text-gray-400 text-center mb-8">
-              Join Sound-Weaver and start creating music
+              Join Sonic-Wave and start creating music
             </p>
 
             {error && (

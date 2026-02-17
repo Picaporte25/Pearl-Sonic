@@ -1,7 +1,6 @@
-import connectDB from '@/lib/db';
-import { Track } from '@/lib/models';
+import { supabaseAdmin } from '@/lib/db';
 import { verifyToken, getTokenFromCookies } from '@/lib/auth';
-import sunoClient from '@/lib/suno';
+import falClient from '@/lib/fal';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -27,11 +26,15 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
-    await connectDB();
+    // Find track
+    const { data: track, error: findError } = await supabaseAdmin
+      .from('tracks')
+      .select('*')
+      .eq('id', trackId)
+      .eq('user_id', userId)
+      .single();
 
-    const track = await Track.findOne({ _id: trackId, userId });
-
-    if (!track) {
+    if (findError || !track) {
       return res.status(404).json({ error: 'Track not found' });
     }
 
@@ -39,59 +42,66 @@ export default async function handler(req, res) {
     if (track.status === 'completed') {
       return res.status(200).json({
         status: track.status,
-        audioUrl: track.audioUrl,
-        coverUrl: track.coverUrl,
+        audioUrl: track.audio_url,
         title: track.title,
         progress: 100,
       });
     }
 
-    // Check if track has a Suno job ID
-    if (!track.sunoId) {
+    // Check if track has a Fal request ID
+    if (!track.fal_request_id) {
       return res.status(200).json({
         status: 'completed',
-        audioUrl: track.audioUrl,
-        coverUrl: track.coverUrl,
+        audioUrl: track.audio_url,
         title: track.title,
         progress: 100,
       });
     }
 
-    // Poll Suno AI for status
-    const sunoResult = await sunoClient.getStatus(track.sunoId);
+    // Poll Fal.ai for status
+    const falResult = await falClient.getStatus(track.fal_request_id);
 
-    if (!sunoResult.success) {
-      console.error('Suno error:', sunoResult.error);
+    if (!falResult.success) {
+      console.error('Fal error:', falResult.error);
       return res.status(200).json({
         status: track.status,
-        audioUrl: track.audioUrl,
-        coverUrl: track.coverUrl,
+        audioUrl: track.audio_url,
         title: track.title,
         progress: 0,
       });
     }
 
-    // Update track based on Suno result
-    if (sunoResult.status === 'completed') {
-      track.status = 'completed';
-      track.audioUrl = sunoResult.audioUrl;
-      track.coverUrl = sunoResult.coverUrl;
-      track.title = sunoResult.title || track.title;
-      track.progress = 100;
-    } else if (sunoResult.status === 'failed') {
-      track.status = 'failed';
+    // Update track based on Fal result
+    const updateData = {};
+
+    if (falResult.status === 'completed') {
+      updateData.status = 'completed';
+      updateData.audio_url = falResult.audioUrl;
+      updateData.title = falResult.title || track.title;
+      updateData.progress = 100;
+    } else if (falResult.status === 'failed') {
+      updateData.status = 'failed';
     } else {
-      track.progress = sunoResult.progress || 0;
+      updateData.progress = falResult.progress || 0;
     }
 
-    await track.save();
+    // Only update if there are changes
+    if (Object.keys(updateData).length > 0) {
+      const { error: updateError } = await supabaseAdmin
+        .from('tracks')
+        .update(updateData)
+        .eq('id', trackId);
+
+      if (updateError) {
+        console.error('Error updating track:', updateData, updateError);
+      }
+    }
 
     res.status(200).json({
-      status: track.status,
-      audioUrl: track.audioUrl,
-      coverUrl: track.coverUrl,
-      title: track.title,
-      progress: track.progress,
+      status: updateData.status || track.status,
+      audioUrl: updateData.audio_url || track.audio_url,
+      title: updateData.title || track.title,
+      progress: updateData.progress !== undefined ? updateData.progress : track.progress,
     });
   } catch (error) {
     console.error('Error in status:', error);

@@ -1,87 +1,115 @@
-import connectDB from '@/lib/db';
-import { User } from '@/lib/models';
+import { supabaseAdmin } from '@/lib/db';
 import { hashPassword, generateToken } from '@/lib/auth';
+import { rateLimit } from '@/lib/rate-limit';
+
+// Apply rate limiting to register endpoint (5 attempts per 15 minutes)
+const rateLimitMiddleware = rateLimit('auth');
 
 export default async function handler(req, res) {
+  // Apply rate limit check
+  const rateLimitResult = rateLimitMiddleware(req, res, () => {
+    // This is a no-op, rateLimitMiddleware handles the check
+  });
+
+  // If rate limited, the response is already sent
+  if (rateLimitResult?.statusCode === 429) {
+    return;
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { email, password } = req.body;
+  // Add security headers
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
 
-  // Log incoming request
-  console.log('Register attempt:', { email, passwordLength: password?.length });
+  const { email, password } = req.body;
 
   // Validate fields
   if (!email || !password) {
-    console.log('Validation failed: missing fields');
     return res.status(400).json({ error: 'Email and password are required' });
   }
 
   // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    console.log('Validation failed: invalid email format');
     return res.status(400).json({ error: 'Invalid email' });
   }
 
-  // Validate password length
+  // Validate password length (min 6, max 128)
   if (password.length < 6) {
-    console.log('Validation failed: password too short');
     return res.status(400).json({ error: 'Password must be at least 6 characters' });
   }
+  if (password.length > 128) {
+    return res.status(400).json({ error: 'Password is too long' });
+  }
+
+  // Validate email length
+  if (email.length > 255) {
+    return res.status(400).json({ error: 'Email is too long' });
+  }
+
+  // Add delay to prevent spam/abuse
+  await new Promise(resolve => setTimeout(resolve, 300));
 
   try {
-    console.log('Attempting to connect to database...');
-    await connectDB();
-    console.log('Database connected successfully');
-
     // Check if email already exists
-    console.log('Checking if user exists:', email);
-    const existingUser = await User.findOne({ email });
-    console.log('Existing user found:', !!existingUser);
+    const { data: existingUser, error: checkError } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('email', email.toLowerCase().trim())
+      .single();
 
     if (existingUser) {
-      console.log('Registration failed: user already exists');
       return res.status(400).json({ error: 'Email already registered' });
     }
 
     // Hash password and create user
-    console.log('Hashing password...');
     const hashedPassword = await hashPassword(password);
-    console.log('Password hashed successfully');
 
-    const user = new User({
-      email,
-      password: hashedPassword,
-      credits: 0,
-    });
+    const { data: newUser, error: insertError } = await supabaseAdmin
+      .from('users')
+      .insert([{
+        email: email.toLowerCase().trim(),
+        password: hashedPassword,
+        credits: 0
+      }])
+      .select()
+      .single();
 
-    console.log('Saving user to database...');
-    await user.save();
-    console.log('User saved successfully');
+    if (insertError) {
+      console.error('Error inserting user:', insertError);
+      return res.status(500).json({ error: 'Error creating user' });
+    }
 
     // Generate token
-    console.log('Generating token...');
-    const token = generateToken(user._id);
-    console.log('Token generated successfully');
+    const token = generateToken(newUser.id);
+
+    // Set cookie with security flags (from server)
+    const isSecure = process.env.NODE_ENV === 'production';
+    const cookieOptions = [
+      `token=${token}`,
+      'path=/',
+      'max-age=604800', // 7 days
+      'HttpOnly',
+      'SameSite=Strict',
+      isSecure ? 'Secure' : ''
+    ].filter(Boolean).join('; ');
+
+    res.setHeader('Set-Cookie', cookieOptions);
 
     res.status(201).json({
       message: 'User registered successfully',
-      token,
       user: {
-        id: user._id,
-        email: user.email,
-        credits: user.credits,
+        id: newUser.id,
+        email: newUser.email,
+        credits: newUser.credits,
       },
     });
   } catch (error) {
     console.error('Error in register:', error);
-    console.error('Error details:', {
-      message: error?.message,
-      stack: error?.stack,
-      name: error?.name
-    });
     res.status(500).json({ error: 'Internal server error' });
   }
 }

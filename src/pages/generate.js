@@ -49,7 +49,7 @@ export default function GeneratePage() {
 
   if (loading) {
     return (
-      <Layout title="Generate Music - Sound-Weaver">
+      <Layout title="Generate Music - Sonic-Wave">
         <div className="flex items-center justify-center min-h-[50vh]">
           <div className="spinner" />
         </div>
@@ -58,11 +58,11 @@ export default function GeneratePage() {
   }
 
   return (
-    <Layout title="Generate Music - Sound-Weaver" user={user} credits={user?.credits || 0}>
+    <Layout title="Generate Music - Sonic-Wave" user={user} credits={user?.credits || 0}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold gradient-text mb-2">Generate Music</h1>
-          <p className="text-text-secondary">
+          <h1 className="text-3xl font-semibold text-white mb-2">Generate Music</h1>
+          <p className="text-gray-400">
             Describe what you want to hear and let AI create something unique for you.
           </p>
         </div>
@@ -79,7 +79,7 @@ export default function GeneratePage() {
           {/* Sidebar - Recent Tracks */}
           <div className="mt-8 lg:mt-0">
             <div className="card sticky top-4">
-              <h3 className="text-xl font-semibold mb-4 text-gold-300">Recent Songs</h3>
+              <h3 className="text-xl font-semibold mb-4 text-white">Recent Songs</h3>
 
               {recentTracks.length > 0 ? (
                 <div className="space-y-4">
@@ -88,7 +88,7 @@ export default function GeneratePage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-text-muted text-sm">
+                <p className="text-gray-500 text-sm">
                   You haven't generated any songs yet. Start now!
                 </p>
               )}
@@ -96,7 +96,7 @@ export default function GeneratePage() {
               {recentTracks.length > 0 && (
                 <button
                   onClick={() => router.push('/history')}
-                  className="btn-outline-gold w-full mt-4 text-sm py-2"
+                  className="btn-outline w-full mt-4 text-sm py-2"
                 >
                   View All History
                 </button>

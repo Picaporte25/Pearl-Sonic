@@ -1,5 +1,4 @@
-import connectDB from '@/lib/db';
-import { Track } from '@/lib/models';
+import { supabaseAdmin } from '@/lib/db';
 import { verifyToken, getTokenFromCookies } from '@/lib/auth';
 
 export default async function handler(req, res) {
@@ -26,20 +25,24 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Token inválido' });
     }
 
-    await connectDB();
+    // Verify ownership
+    const { data: track, error } = await supabaseAdmin
+      .from('tracks')
+      .select('*')
+      .eq('id', trackId)
+      .eq('user_id', userId)
+      .single();
 
-    const track = await Track.findOne({ _id: trackId, userId });
-
-    if (!track) {
+    if (error || !track) {
       return res.status(404).json({ error: 'Track no encontrado' });
     }
 
-    if (!track.audioUrl) {
+    if (!track.audio_url) {
       return res.status(400).json({ error: 'El track aún no está disponible para descarga' });
     }
 
     // Redirigir a la URL del audio
-    res.redirect(302, track.audioUrl);
+    res.redirect(302, track.audio_url);
   } catch (error) {
     console.error('Error en download:', error);
     res.status(500).json({ error: 'Error interno del servidor' });

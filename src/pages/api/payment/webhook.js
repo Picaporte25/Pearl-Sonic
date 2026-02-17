@@ -1,5 +1,4 @@
-import connectDB from '@/lib/db';
-import { User, CreditTransaction } from '@/lib/models';
+import { supabaseAdmin } from '@/lib/db';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -42,27 +41,44 @@ export default async function handler(req, res) {
       const session = event.data.object;
       const { userId, credits, amount } = session.metadata;
 
-      await connectDB();
-
       // Buscar usuario y actualizar créditos
-      const user = await User.findById(userId);
-      if (user) {
+      const { data: user, error: userError } = await supabaseAdmin
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (!userError && user) {
         const creditsToAdd = parseInt(credits, 10);
-        user.credits += creditsToAdd;
-        await user.save();
+        const newCredits = user.credits + creditsToAdd;
 
-        // Registrar transacción
-        const transaction = new CreditTransaction({
-          userId: user._id,
-          amount: creditsToAdd,
-          type: 'purchase',
-          stripeCheckoutSessionId: session.id,
-          stripePaymentIntentId: session.payment_intent,
-          description: `Compra de ${creditsToAdd} créditos`,
-        });
-        await transaction.save();
+        // Actualizar créditos
+        const { error: updateError } = await supabaseAdmin
+          .from('users')
+          .update({ credits: newCredits })
+          .eq('id', user.id);
 
-        console.log(`Créditos actualizados para usuario ${userId}: ${creditsToAdd} créditos añadidos`);
+        if (updateError) {
+          console.error('Error updating credits:', updateError);
+        } else {
+          // Registrar transacción
+          const { error: transError } = await supabaseAdmin
+            .from('credit_transactions')
+            .insert([{
+              user_id: user.id,
+              amount: creditsToAdd,
+              type: 'purchase',
+              stripe_payment_intent_id: session.payment_intent,
+              stripe_checkout_session_id: session.id,
+              description: `Compra de ${creditsToAdd} créditos`,
+            }]);
+
+          if (transError) {
+            console.error('Error creating transaction:', transError);
+          } else {
+            console.log(`Créditos actualizados para usuario ${userId}: ${creditsToAdd} créditos añadidos`);
+          }
+        }
       }
     }
 

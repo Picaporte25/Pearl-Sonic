@@ -1,36 +1,17 @@
-import mongoose from 'mongoose';
+import { createClient } from '@supabase/supabase-js';
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 
-if (!MONGODB_URI) {
-  throw new Error('MONGODB_URI no está definida en las variables de entorno');
+if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+  throw new Error('Supabase environment variables are not defined');
 }
 
-let cached = global.mongoose || { conn: null, promise: null };
+// Cliente para operaciones del lado del cliente
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export async function connectDB() {
-  if (cached.conn) {
-    return cached.conn;
-  }
+// Cliente con permisos de servicio para operaciones del lado del servidor
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
-
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
-    });
-  }
-
-  try {
-    cached.conn = await cached.promise;
-  } catch (e) {
-    cached.promise = null;
-    throw e;
-  }
-
-  return cached.conn;
-}
-
-export default connectDB;
+export default supabaseAdmin;

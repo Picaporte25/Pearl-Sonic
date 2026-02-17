@@ -11,9 +11,9 @@ export default function TrackCard({ track }) {
           <svg className="w-16 h-16 text-gray-600" fill="url(#gradient-card)" viewBox="0 0 24 24">
             <defs>
               <linearGradient id="gradient-card" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#FF5F57" />
-                <stop offset="50%" stopColor="#FEBC2E" />
-                <stop offset="100%" stopColor="#28C840" />
+                <stop offset="0%" stopColor="#8B5CF6" />
+                <stop offset="50%" stopColor="#EC4899" />
+                <stop offset="100%" stopColor="#06B6D4" />
               </linearGradient>
             </defs>
             <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4-1.79 4-4V7h4V3h-6z"/>
@@ -50,7 +50,7 @@ export default function TrackCard({ track }) {
         {track.status === 'generating' && track.progress > 0 && (
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
             <div
-              className="h-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 transition-all duration-300"
+              className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 transition-all duration-300"
               style={{ width: `${track.progress}%` }}
             />
           </div>

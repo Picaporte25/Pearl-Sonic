@@ -1,8 +1,7 @@
-import connectDB from '@/lib/db';
-import { User } from '@/lib/models';
+import { supabaseAdmin } from '@/lib/db';
 import { verifyToken, getTokenFromCookies } from '@/lib/auth';
 
-// PayPal pricing (ARS to USD conversion: 5 USD = 1 credit
+// PayPal pricing (USD): 5 USD = 1 credit
 const CREDITS_PER_USD = 5;
 
 export default async function handler(req, res) {
@@ -29,16 +28,18 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    await connectDB();
+    const { data: user, error } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
 
-    const user = await User.findById(userId);
-
-    if (!user) {
+    if (error || !user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Calculate price in ARS (5000 ARS = 1 USD approx)
-    const priceInArs = credits * 5000;
+    // Calculate price in USD
+    const priceInUsd = credits * CREDITS_PER_USD;
 
     // Generate a unique order ID
     const orderId = `SW_${Date.now()}_${userId}`;
@@ -46,12 +47,11 @@ export default async function handler(req, res) {
     // Create order object
     const order = {
       id: orderId,
-      userId: user._id.toString(),
+      userId: userId,
       credits: credits,
       packageLabel,
-      amountArs: priceInArs,
-      amountUsd: priceInArs / 5000, // Convert to USD for display
-      currency: 'ARS',
+      amountUsd: priceInUsd,
+      currency: 'USD',
       status: 'pending',
       createdAt: new Date(),
     };

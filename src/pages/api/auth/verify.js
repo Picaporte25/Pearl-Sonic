@@ -1,5 +1,4 @@
-import connectDB from '@/lib/db';
-import { User } from '@/lib/models';
+import { supabaseAdmin } from '@/lib/db';
 import { verifyToken, getTokenFromCookies } from '@/lib/auth';
 
 export default async function handler(req, res) {
@@ -20,17 +19,19 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Token inválido' });
     }
 
-    await connectDB();
+    const { data: user, error } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
 
-    const user = await User.findById(userId);
-
-    if (!user) {
+    if (error || !user) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
     res.status(200).json({
       user: {
-        id: user._id,
+        id: user.id,
         email: user.email,
         credits: user.credits,
       },

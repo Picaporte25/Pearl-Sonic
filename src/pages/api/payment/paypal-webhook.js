@@ -1,5 +1,4 @@
-import connectDB from '@/lib/db';
-import { User, CreditTransaction, Track } from '@/lib/models';
+import { supabaseAdmin } from '@/lib/db';
 import { verifyToken, getTokenFromCookies } from '@/lib/auth';
 
 export default async function handler(req, res) {
@@ -20,11 +19,13 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
-    await connectDB();
+    const { data: user, error: userError } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
 
-    const user = await User.findById(userId);
-
-    if (!user) {
+    if (userError || !user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
@@ -63,30 +64,32 @@ export default async function handler(req, res) {
       return res.status(200).json({ received: true, message: 'Payment not completed' });
     }
 
-    // Add credits to user
-    user.credits += creditsToAdd;
-    await user.save();
+    // Update user credits
+    const newCredits = user.credits + creditsToAdd;
+    const { error: updateError } = await supabaseAdmin
+      .from('users')
+      .update({ credits: newCredits })
+      .eq('id', user.id);
+
+    if (updateError) {
+      console.error('Error updating credits:', updateError);
+      return res.status(500).json({ error: 'Error updating credits' });
+    }
 
     // Record transaction
-    const transaction = new CreditTransaction({
-      userId: user._id,
-      amount: creditsToAdd,
-      type: 'purchase',
-      paypalPaymentId: payment_id,
-      paypalPayerEmail: payer_email,
-      paypalPayerName: payer_name,
-      amount: amount_gross,
-      amountFee: amount_fee,
-      transactionId: transaction_id,
-      paymentStatus,
-      paymentGross: payment_gross,
-      paymentFee: amount_fee,
-      customId: custom_id,
-      createdAt: new Date(),
-    });
-    await transaction.save();
+    const { error: transError } = await supabaseAdmin
+      .from('credit_transactions')
+      .insert([{
+        user_id: user.id,
+        amount: creditsToAdd,
+        type: 'purchase',
+        description: `PayPal purchase of ${creditsToAdd} credits`,
+      }]);
 
-    console.log(`Payment processed: ${payer_email} - ${creditsToAdd} credits`);
+    if (transError) {
+      console.error('Error creating transaction:', transError);
+      // Don't fail the request if transaction logging fails
+    }
 
     res.status(200).json({ received: true, message: 'Payment processed successfully' });
   } catch (error) {

@@ -1,5 +1,4 @@
-import connectDB from '@/lib/db';
-import { User } from '@/lib/models';
+import { supabaseAdmin } from '@/lib/db';
 import { verifyToken, getTokenFromCookies } from '@/lib/auth';
 import Stripe from 'stripe';
 
@@ -39,11 +38,13 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Token inválido' });
     }
 
-    await connectDB();
+    const { data: user, error } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
 
-    const user = await User.findById(userId);
-
-    if (!user) {
+    if (error || !user) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
@@ -67,7 +68,7 @@ export default async function handler(req, res) {
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout?canceled=true`,
       metadata: {
-        userId: userId.toString(),
+        userId: userId,
         credits: pkg.credits.toString(),
         amount: pkg.price.toString(),
       },

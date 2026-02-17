@@ -30,9 +30,7 @@ export default function LoginPage() {
         throw new Error(data.error || 'Error logging in');
       }
 
-      // Save token in cookie
-      document.cookie = `token=${data.token}; path=/; max-age=604800`; // 7 days
-
+      // Cookie is now set by the server with security flags
       router.push('/generate');
     } catch (err) {
       setError(err.message);
@@ -42,7 +40,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Layout title="Sign In - Sound-Weaver">
+    <Layout title="Sign In - Sonic-Wave">
       <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           <div className="card">
@@ -52,12 +50,12 @@ export default function LoginPage() {
                 <button className="window-button window-button-minimize" />
                 <button className="window-button window-button-maximize" />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent">
                 Sign In
               </h1>
             </div>
             <p className="text-gray-400 text-center mb-8">
-              Welcome back to Sound-Weaver
+              Welcome back to Sonic-Wave
             </p>
 
             {error && (

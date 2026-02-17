@@ -3,18 +3,18 @@ import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
 
 const PACKAGES = [
-  { credits: 10, price: 5, label: 'Starter' },
-  { credits: 25, price: 10, label: 'Pro', popular: true },
-  { credits: 50, price: 18, label: 'Creator' },
-  { credits: 100, price: 30, label: 'Studio' },
+  { credits: 1, price: 5, label: 'Starter' },
+  { credits: 3, price: 15, label: 'Pro', popular: true },
+  { credits: 5, price: 24, label: 'Creator' },
+  { credits: 10, price: 48, label: 'Studio' },
 ];
 
-// PayPal pricing (in Argentine Pesos, similar to USD pricing)
-const PACKAGES_ARS = [
-  { credits: 10, price: 5000, label: 'Starter', displayPrice: 'AR$5.000' },
-  { credits: 25, price: 10000, label: 'Pro', popular: true, displayPrice: 'AR$10.000' },
-  { credits: 50, price: 18000, label: 'Creator', displayPrice: 'AR$18.000' },
-  { credits: 100, price: 30000, label: 'Studio', displayPrice: 'AR$30.000' },
+// PayPal pricing (in USD)
+const PACKAGES_USD = [
+  { credits: 1, price: 5, label: 'Starter', displayPrice: '$5.00' },
+  { credits: 3, price: 15, label: 'Pro', popular: true, displayPrice: '$15.00' },
+  { credits: 5, price: 24, label: 'Creator', displayPrice: '$24.00' },
+  { credits: 10, price: 48, label: 'Studio', displayPrice: '$48.00' },
 ];
 
 // PayPal sandbox app ID
@@ -38,7 +38,7 @@ export default function CheckoutPage() {
       }
 
       const script = document.createElement('script');
-      script.src = `https://www.paypal.com/sdk/js?client-id=${NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=ARS&intent=capture&disable-funding`;
+      script.src = `https://www.paypal.com/sdk/js?client-id=${NEXT_PUBLIC_PAYPAL_CLIENT_ID}&currency=USD&intent=capture&disable-funding`;
       script.onload = () => {
         console.log('PayPal SDK loaded');
         window.paypal.Buttons().render();
@@ -74,7 +74,7 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        'Authorization': `Bearer ${document.cookie.match(/token=([^;]+)(;|$)/)?.[1] || ''}`,
+          'Authorization': `Bearer ${document.cookie.match(/token=([^;]+)(;|$)/)?.[1] || ''}`,
         },
         body: JSON.stringify({ credits, packageLabel }),
       });
@@ -125,7 +125,7 @@ export default function CheckoutPage() {
           const orderData = JSON.stringify({
             paypalOrderId: data.id,
             credits: data.credits,
-            amount: data.amountArs,
+            amount: data.amountUsd,
             userId: user.id,
           });
           localStorage.setItem('pendingOrder', orderData);
@@ -142,14 +142,14 @@ export default function CheckoutPage() {
   }, [window.paypal, user, loading]);
 
   return (
-    <Layout title="Buy Credits - Sound-Weaver" user={user} credits={user?.credits || 0}>
+    <Layout title="Buy Credits - Sonic-Wave" user={user} credits={user?.credits || 0}>
       <div className="max-w-5xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 gradient-text">
-            Buy Credits
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent">
+            Buy Songs
           </h1>
-          <p className="text-text-secondary">
-            Available credits: <span className="text-gold-300 font-semibold">{user?.credits || 0}</span>
+          <p className="text-gray-400">
+            Available songs: <span className="text-white font-semibold">{user?.credits || 0}</span>
           </p>
         </div>
 
@@ -166,7 +166,7 @@ export default function CheckoutPage() {
         )}
 
         <div className="text-center mb-6">
-          <p className="text-text-muted text-sm">
+          <p className="text-gray-500 text-sm">
             Powered by PayPal • Secure payments
           </p>
         </div>
@@ -177,19 +177,20 @@ export default function CheckoutPage() {
             <div
               key={pkg.credits}
               className={`card text-center ${
-                pkg.popular ? 'border-gold-dark border-2 glow-strong' : 'glow'
+                pkg.popular ? 'border-purple-500 border-2' : ''
               }`}
             >
               {pkg.popular && (
-                <div className="text-gold-300 text-sm font-semibold mb-2">Most popular</div>
+                <div className="text-white text-sm font-semibold mb-2">Most popular</div>
               )}
-              <h3 className="text-lg font-semibold text-text-secondary mb-2">{pkg.label}</h3>
-              <div className="text-4xl font-bold gradient-text mb-2">{pkg.credits}</div>
-              <p className="text-text-muted mb-6">credits</p>
-              <div className="text-2xl font-bold text-gold-300 mb-6">{pkg.displayPrice}</div>
+              <h3 className="text-lg font-semibold text-gray-400 mb-2">{pkg.label}</h3>
+              <div className="text-4xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">{pkg.credits}</div>
+              <p className="text-gray-500 mb-6">songs</p>
+              <p className="text-sm text-gray-600 mb-2">{pkg.credits * 2} minutes of music</p>
+              <div className="text-2xl font-bold text-white mb-6">{pkg.displayPrice}</div>
               <button
                 onClick={() => createOrder(pkg.credits, pkg.label)}
-                className={pkg.popular ? 'btn-gold w-full' : 'btn-outline-gold w-full'}
+                className={pkg.popular ? 'btn-primary w-full' : 'btn-outline w-full'}
                 disabled={loading}
               >
                 {loading ? 'Processing...' : 'Buy'}
@@ -201,10 +202,10 @@ export default function CheckoutPage() {
         {/* PayPal Button Container */}
         <div id="paypal-button-container" className="mt-12" />
 
-        <div className="mt-12 text-center text-text-muted">
+        <div className="mt-12 text-center text-gray-500">
           <p>Credits never expire</p>
           <p className="mt-2">Secure payments processed by PayPal</p>
-          <p className="text-xs mt-1">Prices shown in Argentine Pesos (ARS)</p>
+          <p className="text-xs mt-1">Prices shown in US Dollars (USD)</p>
         </div>
       </div>
     </Layout>

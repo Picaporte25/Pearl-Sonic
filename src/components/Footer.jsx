@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#2C2C2E]/60 backdrop-blur-lg border-t border-gray-800 mt-auto">
+    <footer className="bg-[#111111]/80 backdrop-blur-xl border-t border-[#333333] mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center">
           {/* Logo */}
@@ -16,14 +16,14 @@ export default function Footer() {
               <svg className="w-5 h-5" fill="url(#gradient-footer)" viewBox="0 0 24 24">
                 <defs>
                   <linearGradient id="gradient-footer" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#FF5F57" />
-                    <stop offset="50%" stopColor="#FEBC2E" />
-                    <stop offset="100%" stopColor="#28C840" />
+                    <stop offset="0%" stopColor="#8B5CF6" />
+                    <stop offset="50%" stopColor="#EC4899" />
+                    <stop offset="100%" stopColor="#06B6D4" />
                   </linearGradient>
                 </defs>
                 <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
               </svg>
-              <span className="text-sm text-gray-400 font-medium">Sound-Weaver</span>
+              <span className="text-sm text-white font-medium">Sonic-Wave</span>
             </div>
           </div>
 
@@ -54,7 +54,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="mt-8 text-center text-gray-600 text-sm">
-          <p>&copy; {new Date().getFullYear()} Sound-Weaver. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Sonic-Wave. All rights reserved.</p>
         </div>
       </div>
     </footer>

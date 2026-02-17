@@ -44,7 +44,7 @@ export default function HistoryPage() {
 
   if (loading) {
     return (
-      <Layout title="History - Sound-Weaver">
+      <Layout title="History - Sonic-Wave">
         <div className="flex items-center justify-center min-h-[50vh]">
           <div className="spinner" />
         </div>
@@ -53,11 +53,11 @@ export default function HistoryPage() {
   }
 
   return (
-    <Layout title="History - Sound-Weaver" user={user} credits={user?.credits || 0}>
+    <Layout title="History - Sonic-Wave" user={user} credits={user?.credits || 0}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold gradient-text mb-2">Song History</h1>
-          <p className="text-text-secondary">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">Song History</h1>
+          <p className="text-gray-400">
             All the songs you've generated are here.
           </p>
         </div>

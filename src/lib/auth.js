@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import connectDB from './db';
-import { User } from './models';
+import { supabaseAdmin } from './db';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'tu_jwt_secret_development';
 
@@ -70,10 +69,17 @@ export async function getUserFromToken(context) {
     return null;
   }
 
-  await connectDB();
-
   try {
-    const user = await User.findById(userId);
+    const { data: user, error } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      return null;
+    }
+
     return user;
   } catch (error) {
     return null;
