@@ -23,8 +23,17 @@ export default function Home() {
 
       if (token) {
         const response = await fetch('/api/auth/verify');
-        if (response.ok) {
-          const data = await response.json();
+
+        // Handle empty response
+        const text = await response.text();
+        let data;
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch {
+          data = {};
+        }
+
+        if (response.ok && data.user) {
           setUser(data.user);
         }
       }
