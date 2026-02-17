@@ -1,90 +1,21 @@
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Layout from '@/components/Layout';
+import { getUserFromToken } from '@/lib/auth';
 
-// Client-side function to get token from cookies
-function getTokenFromClient() {
-  if (typeof document === 'undefined') {
-    console.log('Document not available (server side)');
-    return null;
-  }
-  const cookies = document.cookie || '';
-  console.log('Raw cookies:', cookies);
-  const tokenMatch = cookies.match(/token=([^;]+)/);
-  const token = tokenMatch ? tokenMatch[1] : null;
-  console.log('Token extracted:', token ? 'YES' : 'NO');
-  return token;
+export async function getServerSideProps(context) {
+  const user = await getUserFromToken(context);
+
+  return {
+    props: {
+      user,
+      credits: user?.credits || 0,
+    },
+  };
 }
 
-export default function Home() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    console.log('Component mounted');
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-
-    // Small delay to ensure cookies are available
-    const timer = setTimeout(() => {
-      checkAuth();
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [mounted]);
-
-  const checkAuth = async () => {
-    try {
-      console.log('Checking auth...');
-      const token = getTokenFromClient();
-
-      if (token) {
-        console.log('Token found, calling /api/auth/verify...');
-        const response = await fetch('/api/auth/verify');
-
-        // Handle empty response
-        const text = await response.text();
-        let data;
-        try {
-          data = text ? JSON.parse(text) : {};
-        } catch {
-          data = {};
-        }
-
-        console.log('Verify response:', response.status, data);
-
-        if (response.ok && data.user) {
-          console.log('User set successfully:', data.user);
-          setUser(data.user);
-        } else {
-          console.log('Verify failed:', response.status, data);
-        }
-      } else {
-        console.log('No token found, user not logged in');
-      }
-    } catch (err) {
-      console.error('Error checking auth:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <Layout title="Sonic-Wave - Create Music with AI" user={user} credits={user?.credits || 0}>
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="spinner" />
-        </div>
-      </Layout>
-    );
-  }
-
+export default function Home({ user, credits }) {
   return (
-    <Layout title="Sonic-Wave - Create Music with AI" user={user} credits={user?.credits || 0}>
+    <Layout title="Pearl-Sonic - Create Music with AI" user={user} credits={credits}>
       {/* Hero Section */}
       <section className="relative overflow-hidden py-24 sm:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -132,7 +63,7 @@ export default function Home() {
               <h3 className="text-xl font-semibold text-white mb-4">Example Creation</h3>
               <p className="text-gray-400 mb-2 text-sm">Prompt:</p>
               <p className="text-gray-300 mb-6 italic">
-                "Instrumental Groove Metal track, super heavy downtuned guitar riffs, aggressive palm-muted chugs, double bass drums, technical drum fills, dark atmospheric ambient layers in the background, emotional melodic lead guitar sections, cinematic build-ups, powerful breakdowns, high production quality, wide stereo mix, no vocals, intense and immersive mood."
+                "Instrumental Groove Metal track, super heavy downtuned guitar riffs, aggressive palm-muted chugs, double bass drums, technical drum fills, dark atmospheric ambient layers in background, emotional melodic lead guitar sections, cinematic build-ups, powerful breakdowns, high production quality, wide stereo mix, no vocals, intense and immersive mood."
               </p>
               <audio controls className="w-full">
                 <source src="/music/Groove metal track.mp3" type="audio/mpeg" />
@@ -306,7 +237,7 @@ export default function Home() {
             Ready to Create Amazing Music?
           </h2>
           <p className="text-gray-400 text-lg mb-10">
-            Join Sonic-Wave today and start creating unique music with AI.
+            Join Pearl-Sonic today and start creating unique music with AI.
           </p>
           <Link href="/register">
             <button className="btn-primary text-lg px-8 py-4">
