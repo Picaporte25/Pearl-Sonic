@@ -62,6 +62,13 @@ export default async function handler(req, res) {
       .eq('email', email.toLowerCase().trim())
       .single();
 
+    if (checkError) {
+      console.error('Supabase error:', checkError);
+      if (checkError.message?.includes('JWT') || checkError.message?.includes('API')) {
+        return res.status(500).json({ error: 'Database configuration error' });
+      }
+    }
+
     if (existingUser) {
       return res.status(400).json({ error: 'Email already registered' });
     }
@@ -81,6 +88,9 @@ export default async function handler(req, res) {
 
     if (insertError) {
       console.error('Error inserting user:', insertError);
+      if (insertError.message?.includes('JWT') || insertError.message?.includes('API')) {
+        return res.status(500).json({ error: 'Database configuration error' });
+      }
       return res.status(500).json({ error: 'Error creating user' });
     }
 
@@ -94,7 +104,7 @@ export default async function handler(req, res) {
       'path=/',
       'max-age=604800', // 7 days
       'HttpOnly',
-      'SameSite=Strict',
+      'SameSite=Lax',
       isSecure ? 'Secure' : ''
     ].filter(Boolean).join('; ');
 

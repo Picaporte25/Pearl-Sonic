@@ -75,7 +75,7 @@ export default async function handler(req, res) {
       'path=/',
       'max-age=604800', // 7 days
       'HttpOnly',
-      'SameSite=Strict',
+      'SameSite=Lax',
       isSecure ? 'Secure' : ''
     ].filter(Boolean).join('; ');
 
