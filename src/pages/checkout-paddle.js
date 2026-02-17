@@ -229,7 +229,7 @@ export default function PaddleCheckoutPage() {
                 <div className="text-purple-500 text-sm font-semibold mb-2">Most popular</div>
               )}
               {plan.billing === 'monthly' && (
-                <div className="text-green-500 text-xs font-semibold mb-2">SAVE UP TO 20%</div>
+                <div className="text-green-500 text-xs font-semibold mb-2">SAVE WITH SUBSCRIPTION</div>
               )}
               <h3 className="text-lg font-semibold text-gray-400 mb-2">{plan.name}</h3>
               <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">
