@@ -1,6 +1,28 @@
+"use client";
+
+
+import { useEffect } from "react";
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
+
+
+export default function Checkout() {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // código Paddle / window / localStorage
+    }
+  }, []);
+
+  return (
+    <Layout title="Checkout">
+      <div>
+        Checkout
+      </div>
+    </Layout>
+  );
+}
 
 const PACKAGES = [
   { credits: 1, price: 5, label: 'Starter' },
