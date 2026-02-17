@@ -7,8 +7,8 @@ const rateLimitMap = new Map();
  * Rate limiting configuration
  */
 const RATE_LIMIT_CONFIG = {
-  // Login/Register: 5 attempts per 15 minutes
-  auth: { max: 5, windowMs: 15 * 60 * 1000 },
+  // Login/Register: 5 attempts per 1 minute
+  auth: { max: 5, windowMs: 1 * 60 * 1000 },
   // Webhooks: 10 requests per minute (from Paddle)
   webhook: { max: 10, windowMs: 60 * 1000 },
   // Music generation: 5 requests per minute
