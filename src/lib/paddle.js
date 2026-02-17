@@ -18,13 +18,13 @@ export const PADDLE_CONFIG = {
   },
 };
 
-// One-time purchase plans (USD) - INCREASED for comparison
+// One-time purchase plans (USD) - Single payment plans
 export const PADDLE_PRICES_ONETIME = [
   {
     id: process.env.NEXT_PUBLIC_PADDLE_PRICE_STARTER || 'pri_01hj...', // Replace with actual Paddle Price ID
     name: 'Starter',
     credits: 1,
-    price: 9.99,
+    price: 7,
     currency: 'USD',
     billing: 'one-time',
     description: '1 song (2 minutes of music)',
@@ -34,7 +34,7 @@ export const PADDLE_PRICES_ONETIME = [
     id: process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO || 'pri_02k...', // Replace with actual Paddle Price ID
     name: 'Pro',
     credits: 3,
-    price: 14.99,
+    price: 17,
     currency: 'USD',
     billing: 'one-time',
     description: '3 songs (6 minutes of music)',
@@ -44,7 +44,7 @@ export const PADDLE_PRICES_ONETIME = [
     id: process.env.NEXT_PUBLIC_PADDLE_PRICE_CREATOR || 'pri_03l...', // Replace with actual Paddle Price ID
     name: 'Creator',
     credits: 5,
-    price: 24.99,
+    price: 27,
     currency: 'USD',
     billing: 'one-time',
     description: '5 songs (10 minutes of music)',
@@ -54,7 +54,7 @@ export const PADDLE_PRICES_ONETIME = [
     id: process.env.NEXT_PUBLIC_PADDLE_PRICE_STUDIO || 'pri_04m...', // Replace with actual Paddle Price ID
     name: 'Studio',
     credits: 10,
-    price: 59.99,
+    price: 55,
     currency: 'USD',
     billing: 'one-time',
     description: '10 songs (20 minutes of music)',
@@ -68,45 +68,45 @@ export const PADDLE_PRICES_MONTHLY = [
     id: process.env.NEXT_PUBLIC_PADDLE_PRICE_STARTER_MONTHLY || 'pri_05n...', // Replace with actual Paddle Price ID
     name: 'Starter',
     credits: 1,
-    price: 1.99,    // $1.99/month (60% savings vs one-time)
+    price: 5,
     currency: 'USD',
     billing: 'monthly',
     description: '1 song/month (2 minutes)',
     features: ['2 minutes of music', 'Full commercial rights', 'Cancel anytime'],
-    savings: 60,
+    savings: 29,
   },
   {
     id: process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO_MONTHLY || 'pri_06o...', // Replace with actual Paddle Price ID
     name: 'Pro',
     credits: 3,
-    price: 4.99,    // $14.99/month (67% savings vs one-time)
+    price: 15,
     currency: 'USD',
     billing: 'monthly',
     description: '3 songs/month (6 minutes)',
     features: ['6 minutes of music', 'Full commercial rights', 'Cancel anytime'],
-    savings: 67,
+    savings: 12,
   },
   {
     id: process.env.NEXT_PUBLIC_PADDLE_PRICE_CREATOR_MONTHLY || 'pri_07p...', // Replace with actual Paddle Price ID
     name: 'Creator',
     credits: 5,
-    price: 7.99,    // $23.99/month (68% savings vs one-time)
+    price: 25,
     currency: 'USD',
     billing: 'monthly',
     description: '5 songs/month (10 minutes)',
     features: ['10 minutes of music', 'Full commercial rights', 'Cancel anytime'],
-    savings: 68,
+    savings: 7,
   },
   {
     id: process.env.NEXT_PUBLIC_PADDLE_PRICE_STUDIO_MONTHLY || 'pri_08q...', // Replace with actual Paddle Price ID
     name: 'Studio',
     credits: 10,
-    price: 16.99,   // $59.99/month (66% savings vs one-time)
+    price: 50,
     currency: 'USD',
     billing: 'monthly',
     description: '10 songs/month (20 minutes)',
     features: ['20 minutes of music', 'Full commercial rights', 'Cancel anytime'],
-    savings: 66,
+    savings: 9,
   },
 ];
 

@@ -1,6 +1,18 @@
 import Link from 'next/link';
+import { useRef } from 'react';
 
 export default function TrackCard({ track }) {
+  const audioOverlayRef = useRef(null);
+
+  const handleTouchStart = (e) => {
+    e.stopPropagation();
+  };
+
+  const handleTouchMove = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+  };
+
   return (
     <div className="card">
       {/* Cover Art */}
@@ -22,8 +34,18 @@ export default function TrackCard({ track }) {
 
         {/* Audio Player Overlay */}
         {track.status === 'completed' && track.audioUrl && (
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-            <audio controls src={track.audioUrl} className="w-full max-w-[280px]" />
+          <div
+            ref={audioOverlayRef}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity overflow-hidden"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+          >
+            <audio
+              controls
+              src={track.audioUrl}
+              className="w-full max-w-[280px]"
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
         )}
 

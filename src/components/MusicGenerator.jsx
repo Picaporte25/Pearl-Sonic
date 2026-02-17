@@ -105,6 +105,7 @@ export default function MusicGenerator({ userCredits, onCreditUpdate }) {
             value={duration}
             onChange={(e) => setDuration(parseInt(e.target.value))}
             className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+            style={{ touchAction: 'none' }}
             disabled={generating}
           />
           <div className="flex justify-between text-xs text-gray-500 mt-1">

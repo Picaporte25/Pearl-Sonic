@@ -174,7 +174,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-gray-400 mb-2">Starter</h3>
               <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">1</div>
               <p className="text-gray-500 mb-6">song</p>
-              <div className="text-2xl font-medium text-white mb-6">$5</div>
+              <div className="text-2xl font-medium text-white mb-6">$7</div>
               <p className="text-sm text-gray-600 mb-4">2 minutes of music</p>
               {user ? (
                 <Link href="/checkout-paddle">
@@ -197,7 +197,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-gray-400 mb-2">Pro</h3>
               <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">3</div>
               <p className="text-gray-500 mb-6">songs</p>
-              <div className="text-2xl font-medium text-white mb-6">$15</div>
+              <div className="text-2xl font-medium text-white mb-6">$17</div>
               <p className="text-sm text-gray-600 mb-4">6 minutes of music</p>
               {user ? (
                 <Link href="/checkout-paddle">
@@ -219,7 +219,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-gray-400 mb-2">Creator</h3>
               <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">5</div>
               <p className="text-gray-500 mb-6">songs</p>
-              <div className="text-2xl font-medium text-white mb-6">$24</div>
+              <div className="text-2xl font-medium text-white mb-6">$27</div>
               <p className="text-sm text-gray-600 mb-4">10 minutes of music</p>
               {user ? (
                 <Link href="/checkout-paddle">
@@ -241,7 +241,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-gray-400 mb-2">Studio</h3>
               <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">10</div>
               <p className="text-gray-500 mb-6">songs</p>
-              <div className="text-2xl font-medium text-white mb-6">$48</div>
+              <div className="text-2xl font-medium text-white mb-6">$55</div>
               <p className="text-sm text-gray-600 mb-4">20 minutes of music</p>
               {user ? (
                 <Link href="/checkout-paddle">

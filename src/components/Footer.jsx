@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center">
           {/* Logo */}
-          <div className="flex items-center space-x-3 mb-4 md:mb-0">
+          <div className="flex items-center space-x-4 mb-4 md:mb-0">
             <div className="window-buttons">
               <button className="window-button window-button-close" />
               <button className="window-button window-button-minimize" />
@@ -23,7 +23,7 @@ export default function Footer() {
                 </defs>
                 <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
               </svg>
-              <span className="text-sm text-white font-medium">Sonic-Wave</span>
+              <span className="text-sm text-white font-medium ml-2">Pearl-Sonic</span>
             </div>
           </div>
 
@@ -54,7 +54,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="mt-8 text-center text-gray-600 text-sm">
-          <p>&copy; {new Date().getFullYear()} Sonic-Wave. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Pearl-Sonic. All rights reserved.</p>
         </div>
       </div>
     </footer>
