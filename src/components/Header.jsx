@@ -14,22 +14,25 @@ export default function Header({ user = null, credits = 0 }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/">
-            <div className="flex items-center space-x-3 cursor-pointer">
-              <div className="window-buttons">
-                <button className="window-button window-button-close" />
-                <button className="window-button window-button-minimize" />
-                <button className="window-button window-button-maximize" />
-              </div>
-              <span className="text-xl font-bold text-white">
-                Pearl-Sonic
-              </span>
+          <div className="flex items-center space-x-3">
+            <div className="window-buttons">
+              <button className="window-button window-button-close" />
+              <button className="window-button window-button-minimize" />
+              <button className="window-button window-button-maximize" />
             </div>
-          </Link>
+            <span className="text-xl font-bold text-white">
+              Pearl-Sonic
+            </span>
+          </div>
 
           {/* Navigation */}
           {user ? (
             <nav className="flex items-center space-x-6">
+              <Link href="/">
+                <span className="text-white hover:text-gray-300 transition-colors cursor-pointer font-medium">
+                  Home
+                </span>
+              </Link>
               <Link href="/generate">
                 <span className="text-white hover:text-gray-300 transition-colors cursor-pointer font-medium">
                   Generate
