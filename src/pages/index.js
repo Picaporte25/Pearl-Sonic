@@ -4,9 +4,15 @@ import Layout from '@/components/Layout';
 
 // Client-side function to get token from cookies
 function getTokenFromClient() {
+  if (typeof document === 'undefined' || !document.cookie) {
+    console.log('Document or cookie not available');
+    return null;
+  }
   const cookies = document.cookie || '';
   const tokenMatch = cookies.match(/token=([^;]+)/);
-  return tokenMatch ? tokenMatch[1] : null;
+  const token = tokenMatch ? tokenMatch[1] : null;
+  console.log('Token found:', !!token);
+  return token;
 }
 
 export default function Home() {
@@ -22,6 +28,7 @@ export default function Home() {
       const token = getTokenFromClient();
 
       if (token) {
+        console.log('Calling /api/auth/verify...');
         const response = await fetch('/api/auth/verify');
 
         // Handle empty response
@@ -33,9 +40,16 @@ export default function Home() {
           data = {};
         }
 
+        console.log('Verify response:', response.status, data);
+
         if (response.ok && data.user) {
+          console.log('User set:', data.user);
           setUser(data.user);
+        } else {
+          console.log('Verify failed:', response.status, data);
         }
+      } else {
+        console.log('No token found, user not logged in');
       }
     } catch (err) {
       console.error('Error checking auth:', err);
