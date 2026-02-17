@@ -123,7 +123,8 @@ export default function RefundPolicyPage() {
             </Link>
           </div>
         </div>
+        </div>
       </Layout>
     );
   }
-}
+
