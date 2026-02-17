@@ -3,7 +3,7 @@ import Header from './Header';
 import Footer from './Footer';
 // import { useEffect } from 'react';
 
-export default function Layout({ children, title = 'Sonic-Wave', user = null, credits = 0 }) {
+export default function Layout({ children, title = 'Pearl-Sonic', user = null, credits = 0 }) {
   // Comentado temporalmente - descomenta las siguientes líneas cuando tengas credenciales de PayPal reales
   /*
   useEffect(() => {
@@ -21,7 +21,7 @@ export default function Layout({ children, title = 'Sonic-Wave', user = null, cr
     <>
       <Head>
         <title>{title}</title>
-        <meta name="description" content="Create music with artificial intelligence - Sonic-Wave" />
+        <meta name="description" content="Create music with artificial intelligence - Pearl-Sonic" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.svg" />
       </Head>

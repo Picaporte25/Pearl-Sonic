@@ -55,7 +55,7 @@ export default function Home() {
             <div className="text-left">
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-medium mb-6">
                 <span className="text-white">
-                  Sonic-Wave
+                  Pearl-Sonic
                 </span>
               </h1>
               <p className="text-xl sm:text-2xl text-gray-400 mb-4">

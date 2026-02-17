@@ -1,4 +1,4 @@
-# Sonic-Wave 🎵
+# Pearl-Sonic 🎵
 
 AI-Powered music generation platform - Create unique music for your projects.
 
@@ -18,7 +18,6 @@ AI-Powered music generation platform - Create unique music for your projects.
 - **Database**: Supabase
 - **Payments**: PayPal + Paddle (international support)
 - **AI Provider**: ElevenLabs (fal.ai)
-- **Deployment**: Vercel (recommended)
 
 ## 📋 Pricing
 
@@ -30,9 +29,10 @@ AI-Powered music generation platform - Create unique music for your projects.
 - etc.
 
 **Subscription Plans (Paddle):**
-- Pro: $9.99/month - 15 songs (30 min)
-- Creator: $19.99/month - 45 songs (90 min)
-- Studio: $39.99/month - 100 songs (200 min)
+- Starter: $4.99/month - 1 credit (2 min)
+- Pro: $14.99/month - 3 credits (6 min)
+- Creator: $23.99/month - 5 credits (10 min)
+- Studio: $47.99/month - 10 credits (20 min)
 
 ## 🚀 Getting Started
 
@@ -51,9 +51,6 @@ npm install
 
 # Setup environment variables
 cp .env.example .env.local
-
-# Start development server
-npm run dev
 ```
 
 ### Environment Variables
@@ -64,26 +61,67 @@ Create a `.env.local` file with:
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+SUPABASE_SERVICE_KEY=your-supabase-service-key
 
 # ElevenLabs (fal.ai)
-FAL_KEY=your-fal-ai-key
+FAL_API_KEY=your-fal-ai-key
 
-# PayPal (optional - for legacy checkout)
-NEXT_PUBLIC_PAYPAL_CLIENT_ID=your-paypal-client-id
-PAYPAL_CLIENT_ID=your-paypal-client-id
+# JWT Secret for authentication
+JWT_SECRET=your-jwt-secret
 
 # Paddle (recommended for international payments)
 PADDLE_TOKEN=your-paddle-api-token
-PADDLE_PRICE_PRO=pri_01hj...your-pro-price-id
-PADDLE_PRICE_CREATOR=pri_02k...your-creator-price-id
-PADDLE_PRICE_STUDIO=pri_03l...your-studio-price-id
+PADDLE_WEBHOOK_SECRET=your-paddle-webhook-secret
+NEXT_PUBLIC_PADDLE_TOKEN=your-public-paddle-client-token
+NEXT_PUBLIC_PADDLE_ENVIRONMENT=sandbox
+
+# Paddle Price IDs (get these from Paddle Dashboard)
+# One-time purchases
+NEXT_PUBLIC_PADDLE_PRICE_STARTER=pri_01hj...your-starter-price-id
+NEXT_PUBLIC_PADDLE_PRICE_PRO=pri_02k...your-pro-price-id
+NEXT_PUBLIC_PADDLE_PRICE_CREATOR=pri_03l...your-creator-price-id
+NEXT_PUBLIC_PADDLE_PRICE_STUDIO=pri_04m...your-studio-price-id
+# Monthly subscriptions
+NEXT_PUBLIC_PADDLE_PRICE_STARTER_MONTHLY=pri_05n...your-starter-monthly-price-id
+NEXT_PUBLIC_PADDLE_PRICE_PRO_MONTHLY=pri_06o...your-pro-monthly-price-id
+NEXT_PUBLIC_PADDLE_PRICE_CREATOR_MONTHLY=pri_07p...your-creator-monthly-price-id
+NEXT_PUBLIC_PADDLE_PRICE_STUDIO_MONTHLY=pri_08q...your-studio-monthly-price-id
+```
+
+### Database Setup
+
+Run the SQL setup script in Supabase:
+
+```bash
+# Choose one:
+- supabase-setup.sql          # Complete setup with RLS
+- supabase-setup-safe.sql      # Minimal setup (if you prefer)
+
+# Copy the SQL from the file and run in Supabase Dashboard
+# In: Supabase Dashboard → SQL Editor → New Query → Paste SQL → Run
+```
+
+### Development
+
+```bash
+# Start development server
+npm run dev
+```
+
+### Production
+
+```bash
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
 ## 📁 Project Structure
 
 ```
-sound-weaver/
+pearl-sonic/
 ├── public/
 │   ├── favicon.svg
 │   └── music/           # Music files for examples
@@ -97,14 +135,22 @@ sound-weaver/
 │   │   ├── auth.js
 │   │   ├── db.js
 │   │   ├── fal.js
-│   │   └── paddle.js
-│   ├── pages/
+│   │   ├── paddle.js
+│   │   ├── webhook-verify.js
+│   │   └── rate-limit.js
+│   └── pages/
 │   │   ├── api/
 │   │   │   ├── auth/
-│   │   │   ├── payment/
-│   │   │   │   ├── create-checkout.js
-│   │   │   │   ├── paypal-create-order.js
-│   │   │   │   └── paypal-webhook.js
+│   │   │   │   ├── register.js
+│   │   │   │   └── login.js
+│   │   │   └── payment/
+│   │   │       ├── create-checkout.js
+│   │   │       ├── paypal-create-order.js
+│   │   │       └── paypal-webhook.js
+│   │   │   └── paddle-create-checkout.js
+│   │   │       └── paddle-webhook.js
+│   │   └── subscription/
+│   │   │       └── cancel.js
 │   │   ├── _app.js
 │   │   ├── _document.js
 │   │   ├── index.js
@@ -115,83 +161,40 @@ sound-weaver/
 │   │   ├── history.js
 │   │   ├── checkout.js
 │   │   ├── checkout-paddle.js
-│   │   └── checkout/success.js
+│   │   ├── checkout-paddle/
+│   │   │   └── success.js
+│   │   ├── refund-policy.js
+│   │   └── terms.js
 │   └── styles/
 │       └── globals.css
-└── package.json
+├── package.json
+└── README.md
 ```
 
 ## 🎨 Customization
 
-### Colors (CSS Variables)
+### Updating Brand Colors
+
+To change the gradient colors:
+
+1. Open `src/styles/globals.css`
+2. Update the color variables:
 
 ```css
 :root {
   /* Primary Gradient */
-  --color-purple: #8B5CF6;
-  --color-pink: #EC4899;
-  --color-cyan: #06B6D4;
+  --color-purple: #YOUR_PURPLE_HEX;
+  --color-pink: #YOUR_PINK_HEX;
+  --color-cyan: #YOUR_CYAN_HEX;
 
   /* macOS Window Buttons */
-  --macos-purple: #8B5CF6;
-  --macos-pink: #EC4899;
-  --macos-cyan: #06B6D4;
-
-  /* Backgrounds */
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #111111;
-  --bg-card: #111111;
-
-  /* Text */
-  --text-primary: #FFFFFF;
-  --text-secondary: #E5E5E5;
-  --text-muted: #999999;
-
-  /* Borders */
-  --border-color: #333333;
+  --macos-purple: #YOUR_MACOS_PURPLE_HEX;
+  --macos-pink: #YOUR_MACOS_PINK_HEX;
+  --macos-cyan: #YOUR_MACOS_CYAN_HEX;
 }
 ```
 
-### Updating Brand Colors
-
-To change the gradient colors:
-1. Open `src/styles/globals.css`
-2. Update the color variables
 3. The changes will apply across all components
-
-## 🎯 Key Features Explained
-
-### Music Generation
-
-**Duration Slider:**
-- Range: 0.5 to 10 minutes
-- Step: 0.01 minute (decimal precision)
-- Rounded up for credit calculation
-
-**Credit System:**
-- 0.5-1.00 minutes = 0.5 credits
-- 1.01-2.00 minutes = 1 credit
-- Formula: `Math.floor(minutes) * 0.5`
-- Always rounded up to match ElevenLabs billing
-
-**Price Calculation:**
-- $5 USD per credit
-- Total: `creditsNeeded * 5`
-- Profit: `(creditsNeeded * 5) - (creditsNeeded * 1.60)`
-
-### Payment Integration
-
-**PayPal (Legacy):**
-- One-time purchases
-- Basic checkout flow
-- Webhook-based credit updates
-
-**Paddle (Recommended for Argentina):**
-- Subscription-based (monthly)
-- Automatic renewals
-- Customer portal for management
-- Built-in tax handling
-- No geographic restrictions
 
 ## 🔧 Development
 
@@ -204,7 +207,7 @@ npm run dev
 # Production build
 npm run build
 
-# Start production server
+# Start production
 npm start
 
 # Lint code
@@ -216,7 +219,7 @@ npm run lint
 **Authentication:**
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
-- `POST /api/auth/verify` - Token verification
+- `GET /api/auth/verify` - Token verification
 
 **Music Generation:**
 - `POST /api/music/generate` - Create new music
@@ -227,6 +230,8 @@ npm run lint
 - `POST /api/payment/create-checkout` - Stripe checkout
 - `POST /api/payment/paypal-create-order` - PayPal order
 - `POST /api/payment/paypal-webhook` - PayPal notifications
+- `POST /api/payment/paddle-create-checkout` - Paddle checkout
+- `POST /api/payment/paddle-webhook` - Paddle notifications
 - `GET /api/payment/webhook-status` - Webhook verification
 
 **User Management:**
@@ -234,69 +239,9 @@ npm run lint
 - `GET /api/user/history` - Get music history
 - `GET /api/user/transactions` - Get payment history
 - `GET /api/user/profile` - Get user profile
+- `POST /api/subscription/cancel` - Cancel subscription
 
-## 📊 Database Schema (Supabase)
-
-**Tables:**
-
-**users**
-```sql
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  credits INTEGER DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
-
-**tracks**
-```sql
-CREATE TABLE tracks (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  fal_request_id VARCHAR(255),
-  title VARCHAR(255),
-  description TEXT,
-  duration INTEGER, -- in milliseconds
-  status VARCHAR(50), -- 'generating', 'completed', 'failed'
-  audio_url TEXT,
-  cover_url TEXT,
-  credits_used INTEGER,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
-
-**credit_transactions**
-```sql
-CREATE TABLE credit_transactions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  amount INTEGER, -- positive for purchases, negative for usage
-  type VARCHAR(50), -- 'purchase', 'usage', 'subscription', 'subscription_cancelled'
-  description TEXT,
-  track_id UUID REFERENCES tracks(id),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
-
-**subscriptions** (for Paddle)
-```sql
-CREATE TABLE subscriptions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  paddle_subscription_id VARCHAR(255),
-  plan_type VARCHAR(50), -- 'pro', 'creator', 'studio'
-  status VARCHAR(50), -- 'active', 'cancelled', 'paused'
-  current_period_start TIMESTAMP,
-  current_period_end TIMESTAMP,
-  cancel_at TIMESTAMP,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
-
-## 🚢 Deployment
+## 🚀 Deployment
 
 ### Vercel (Recommended)
 
@@ -308,14 +253,35 @@ npm i -g vercel
 vercel login
 
 # Deploy
-vercel --prod
+vercel
 
 # Add environment variables in Vercel dashboard
+# Add all variables from .env.local above
 ```
 
 ### Environment Variables in Vercel
 
-Add all variables from `.env.local` section above
+Add all variables from `.env.local` section above to your Vercel project settings.
+
+## 📊 Database Schema (Supabase)
+
+### Tables
+
+**users:**
+- Stores user accounts and credit balance
+- Includes subscription tracking for Paddle
+
+**tracks:**
+- Stores generated music tracks
+- Links to user who created them
+
+**credit_transactions:**
+- Records all credit purchases and usage
+- Tracks payment method and type
+
+**subscriptions:**
+- (Optional) Paddle subscription tracking
+- For managing active subscriptions
 
 ## 🧪 Testing
 
@@ -331,25 +297,9 @@ Create test accounts:
 - Regular user for standard flow testing
 - Admin account for payment testing
 
-## 📝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Make your changes
-4. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-5. Push to the branch (`git push origin feature/AmazingFeature`)
-6. Open a Pull Request
-
 ## 📄 License
 
 This project is proprietary. All rights reserved.
-
-## 👥 Support
-
-For issues or questions:
-- Check [PADDLE-SETUP.md](./PADDLE-SETUP.md) for Paddle integration
-- Review the codebase documentation
-- Check ElevenLabs API docs
 
 ## 🙏 Acknowledgments
 
@@ -363,4 +313,4 @@ For issues or questions:
 
 ---
 
-**Built with ❤️ by the Sonic-Wave Team**
+**Built with ❤️ by the Pearl-Sonic Team**
