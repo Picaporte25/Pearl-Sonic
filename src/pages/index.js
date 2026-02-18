@@ -131,7 +131,7 @@ export default function Home({ user, credits }) {
             Song Packages
           </h2>
           <p className="text-gray-400 text-center mb-6 max-w-2xl mx-auto">
-            Generate AI music at affordable prices. Each song is 2 minutes long.
+            Generate AI music at affordable prices. Create songs of any duration you want.
           </p>
           <p className="text-gray-500 text-center mb-16 max-w-2xl mx-auto">
             Songs never expire • Instant generation • Commercial use included

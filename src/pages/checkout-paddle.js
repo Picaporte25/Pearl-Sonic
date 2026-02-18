@@ -157,7 +157,7 @@ export default function PaddleCheckoutPage() {
             Choose Your Plan
           </h1>
           <p className="text-gray-400 mb-2">
-            Generate AI music at affordable prices. Each song is 2 minutes long.
+            Generate AI music at affordable prices. Create songs of any duration you want.
           </p>
           <p className="text-gray-500">
             Available credits: <span className="text-white font-semibold">{user?.credits || 0}</span>
