@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
+import { getUserFromToken } from '@/lib/auth';
 
 const PACKAGES = [
   { credits: 1, price: 7, label: 'Starter' },
@@ -16,53 +16,42 @@ const PACKAGES_USD = [
   { credits: 10, price: 55, label: 'Studio', displayPrice: '$55.00' },
 ];
 
-export default function Checkout() {
-  const router = useRouter();
-  const [user, setUser] = useState(null);
-  const [isMounted, setIsMounted] = useState(false);
+export async function getServerSideProps(context) {
+  const user = await getUserFromToken(context);
 
-  useEffect(() => {
-    setIsMounted(true);
-    fetchUser();
-  }, []);
+  if (!user) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
 
-  const fetchUser = async () => {
-    try {
-      const response = await fetch('/api/auth/verify');
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-      } else {
-        router.push('/login');
-      }
-    } catch (err) {
-      router.push('/login');
-    }
+  return {
+    props: {
+      user,
+      credits: user.credits || 0,
+    },
   };
+}
+
+export default function Checkout({ user, credits }) {
+  const router = useRouter();
 
   const handleBuy = () => {
     router.push('/checkout-paddle');
   };
 
-  if (!isMounted) {
-    return (
-      <Layout title="Buy Credits - Pearl-Sonic" user={null} credits={0}>
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="spinner" />
-        </div>
-      </Layout>
-    );
-  }
-
   return (
-    <Layout title="Buy Songs - Pearl-Sonic" user={user} credits={user?.credits || 0}>
+    <Layout title="Buy Songs - Pearl-Sonic" user={user} credits={credits}>
       <div className="max-w-5xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent">
             Buy Songs
           </h1>
           <p className="text-gray-400">
-            Available songs: <span className="text-white font-semibold">{user?.credits || 0}</span>
+            Available songs: <span className="text-white font-semibold">{credits}</span>
           </p>
         </div>
 

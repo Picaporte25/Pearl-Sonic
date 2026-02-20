@@ -1,11 +1,33 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
+import { getUserFromToken } from '@/lib/auth';
 import { PADDLE_PRICES_ONETIME, PADDLE_PRICES_MONTHLY, formatPrice } from '@/lib/paddle';
 
-export default function PaddleCheckoutPage() {
+export async function getServerSideProps(context) {
+  const user = await getUserFromToken(context);
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      user,
+      credits: user.credits || 0,
+    },
+  };
+}
+
+export default function PaddleCheckoutPage({ user: serverUser, credits: serverCredits }) {
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [user] = useState(serverUser);
+  const [credits] = useState(serverCredits);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isPaddleReady, setIsPaddleReady] = useState(false);
@@ -13,23 +35,8 @@ export default function PaddleCheckoutPage() {
   const [billingType, setBillingType] = useState('one-time'); // 'one-time' or 'monthly'
 
   useEffect(() => {
-    fetchUser();
     loadPaddle();
   }, []);
-
-  const fetchUser = async () => {
-    try {
-      const response = await fetch('/api/auth/verify');
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-      } else {
-        router.push('/login');
-      }
-    } catch (err) {
-      router.push('/login');
-    }
-  };
 
   // Load Paddle SDK dynamically
   const loadPaddle = () => {
@@ -134,7 +141,7 @@ export default function PaddleCheckoutPage() {
 
   if (loading && isPaddleReady) {
     return (
-      <Layout title="Buy Credits - Sonic-Wave" user={user} credits={user?.credits || 0}>
+      <Layout title="Buy Credits - Sonic-Wave" user={user} credits={credits}>
         <div className="max-w-6xl mx-auto px-4 py-12">
           <div className="flex items-center justify-center min-h-[50vh]">
             <div className="text-center">
@@ -160,7 +167,7 @@ export default function PaddleCheckoutPage() {
             Generate AI music at affordable prices. Create songs of any duration you want.
           </p>
           <p className="text-gray-500">
-            Available credits: <span className="text-white font-semibold">{user?.credits || 0}</span>
+            Available credits: <span className="text-white font-semibold">{credits}</span>
           </p>
         </div>
 
