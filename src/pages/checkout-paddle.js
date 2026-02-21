@@ -32,7 +32,7 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
   const [error, setError] = useState('');
   const [isPaddleReady, setIsPaddleReady] = useState(false);
   const [showSetupMessage, setShowSetupMessage] = useState(true);
-  const [billingType, setBillingType] = useState('one-time'); // 'one-time' or 'monthly'
+  const [billingType, setBillingType] = useState('one-time'); // 'one-time' or 'monthly' (HIDDEN)
 
   useEffect(() => {
     loadPaddle();
@@ -200,8 +200,8 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
           </div>
         )}
 
-        {/* Billing Type Toggle */}
-        <div className="flex justify-center mb-8">
+        {/* Billing Type Toggle - HIDDEN: Monthly subscriptions not shown */}
+        {/* <div className="flex justify-center mb-8">
           <div className="inline-flex bg-[#222] rounded-lg p-1 border border-[#333]">
             <button
               onClick={() => setBillingType('one-time')}
@@ -224,7 +224,7 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
               Monthly Subscription
             </button>
           </div>
-        </div>
+        </div> */}
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {prices.map((plan) => (
@@ -240,9 +240,9 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
               )}
               <h3 className="text-lg font-semibold text-gray-400 mb-2">{plan.name}</h3>
               <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">
-                {plan.credits}
+                {plan.credits * 2}
               </div>
-              <p className="text-gray-500 mb-6">song{plan.credits !== 1 ? 's' : ''}{plan.billing === 'monthly' ? '/month' : ''}</p>
+              <p className="text-gray-500 mb-6">minutes of music</p>
               <div className="text-2xl font-medium text-white mb-6">
                 {formatPrice(plan.price)}
                 {plan.billing === 'monthly' && <span className="text-sm text-gray-400">/mo</span>}
@@ -266,8 +266,8 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
           ))}
         </div>
 
-        {/* Subscription Info */}
-        {billingType === 'monthly' && (
+        {/* Subscription Info - HIDDEN: Monthly subscriptions not shown */}
+        {/* {billingType === 'monthly' && (
           <div className="bg-green-500/10 border border-green-500/30 text-green-400 px-6 py-4 rounded-lg mb-12">
             <div className="flex items-start gap-3">
               <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,7 +284,7 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Info Section */}
         <div className="text-center mt-12">

@@ -101,7 +101,7 @@ export default function MusicGenerator({ userCredits, onCreditUpdate }) {
             id="duration"
             min={10}
             max={600}
-            step={10}
+            step={1}
             value={duration}
             onChange={(e) => setDuration(parseInt(e.target.value))}
             className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
@@ -169,7 +169,7 @@ export default function MusicGenerator({ userCredits, onCreditUpdate }) {
             <div>
               <p className="text-xs text-gray-400 mb-1">Cost (USD)</p>
               <p className="text-lg font-semibold text-indigo-300">
-                ${(duration * 0.041666666666666664).toFixed(2)}
+                ${(duration * 0.04158333333333333).toFixed(2)}
               </p>
             </div>
           </div>
@@ -210,7 +210,7 @@ export default function MusicGenerator({ userCredits, onCreditUpdate }) {
           ) : (
             <>
               <span>Start Creating</span>
-              <span className="text-sm opacity-75">(${(duration * 0.041666666666666664).toFixed(2)} USD - {Math.ceil(duration / 60)} credit{Math.ceil(duration / 60) !== 1 ? 's' : ''})</span>
+              <span className="text-sm opacity-75">(${(duration * 0.04158333333333333).toFixed(2)} USD - {Math.ceil(duration / 60)} credit{Math.ceil(duration / 60) !== 1 ? 's' : ''})</span>
             </>
           )}
         </button>

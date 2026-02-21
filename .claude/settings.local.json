@@ -7,7 +7,9 @@
       "Bash(git branch:*)",
       "Bash(git checkout:*)",
       "Bash(grep:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)"
     ]
   }
 }

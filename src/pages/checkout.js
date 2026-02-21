@@ -3,17 +3,17 @@ import Layout from '@/components/Layout';
 import { getUserFromToken } from '@/lib/auth';
 
 const PACKAGES = [
-  { credits: 1, price: 7, label: 'Starter' },
-  { credits: 3, price: 17, label: 'Pro', popular: true },
-  { credits: 5, price: 27, label: 'Creator' },
-  { credits: 10, price: 55, label: 'Studio' },
+  { credits: 1, price: 5, label: 'Starter' },
+  { credits: 3, price: 15, label: 'Pro', popular: true },
+  { credits: 5, price: 25, label: 'Creator' },
+  { credits: 10, price: 50, label: 'Studio' },
 ];
 
 const PACKAGES_USD = [
-  { credits: 1, price: 7, label: 'Starter', displayPrice: '$7.00' },
-  { credits: 3, price: 17, label: 'Pro', popular: true, displayPrice: '$17.00' },
-  { credits: 5, price: 27, label: 'Creator', displayPrice: '$27.00' },
-  { credits: 10, price: 55, label: 'Studio', displayPrice: '$55.00' },
+  { credits: 1, price: 5, label: 'Starter', displayPrice: '$5.00' },
+  { credits: 3, price: 15, label: 'Pro', popular: true, displayPrice: '$15.00' },
+  { credits: 5, price: 25, label: 'Creator', displayPrice: '$25.00' },
+  { credits: 10, price: 50, label: 'Studio', displayPrice: '$50.00' },
 ];
 
 export async function getServerSideProps(context) {
@@ -73,9 +73,8 @@ export default function Checkout({ user, credits }) {
                 <div className="text-white text-sm font-semibold mb-2">Most popular</div>
               )}
               <h3 className="text-lg font-semibold text-gray-400 mb-2">{pkg.label}</h3>
-              <div className="text-4xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">{pkg.credits}</div>
-              <p className="text-gray-500 mb-6">songs</p>
-              <p className="text-sm text-gray-600 mb-2">{pkg.credits * 2} minutes of music</p>
+              <div className="text-4xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">{pkg.credits * 2}</div>
+              <p className="text-gray-500 mb-6">minutes of music</p>
               <div className="text-2xl font-bold text-white mb-6">{pkg.displayPrice}</div>
               <button
                 onClick={handleBuy}

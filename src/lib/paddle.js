@@ -24,7 +24,7 @@ export const PADDLE_PRICES_ONETIME = [
     id: process.env.NEXT_PUBLIC_PADDLE_PRICE_STARTER || 'pri_01hj...', // Replace with actual Paddle Price ID
     name: 'Starter',
     credits: 1,
-    price: 7,
+    price: 5,
     currency: 'USD',
     billing: 'one-time',
     description: '1 song (2 minutes of music)',
@@ -34,7 +34,7 @@ export const PADDLE_PRICES_ONETIME = [
     id: process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO || 'pri_02k...', // Replace with actual Paddle Price ID
     name: 'Pro',
     credits: 3,
-    price: 17,
+    price: 15,
     currency: 'USD',
     billing: 'one-time',
     description: '3 songs (6 minutes of music)',
@@ -44,7 +44,7 @@ export const PADDLE_PRICES_ONETIME = [
     id: process.env.NEXT_PUBLIC_PADDLE_PRICE_CREATOR || 'pri_03l...', // Replace with actual Paddle Price ID
     name: 'Creator',
     credits: 5,
-    price: 27,
+    price: 25,
     currency: 'USD',
     billing: 'one-time',
     description: '5 songs (10 minutes of music)',
@@ -54,7 +54,7 @@ export const PADDLE_PRICES_ONETIME = [
     id: process.env.NEXT_PUBLIC_PADDLE_PRICE_STUDIO || 'pri_04m...', // Replace with actual Paddle Price ID
     name: 'Studio',
     credits: 10,
-    price: 55,
+    price: 50,
     currency: 'USD',
     billing: 'one-time',
     description: '10 songs (20 minutes of music)',

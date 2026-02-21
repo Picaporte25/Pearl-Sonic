@@ -128,7 +128,7 @@ export default function Home({ user, credits }) {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl sm:text-4xl font-medium text-center mb-4 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent">
-            Song Packages
+            Credit Packages
           </h2>
           <p className="text-gray-400 text-center mb-6 max-w-2xl mx-auto">
             Generate AI music at affordable prices. Create songs of any duration you want.
@@ -141,10 +141,9 @@ export default function Home({ user, credits }) {
             {/* Package 1 */}
             <div className="card text-center">
               <h3 className="text-lg font-semibold text-gray-400 mb-2">Starter</h3>
-              <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">1</div>
-              <p className="text-gray-500 mb-6">song</p>
-              <div className="text-2xl font-medium text-white mb-6">$7</div>
-              <p className="text-sm text-gray-600 mb-4">2 minutes of music</p>
+              <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">2</div>
+              <p className="text-gray-500 mb-6">minutes of music</p>
+              <div className="text-2xl font-medium text-white mb-6">$5</div>
               {user ? (
                 <Link href="/checkout-paddle">
                   <button className="btn-outline w-full">
@@ -164,10 +163,9 @@ export default function Home({ user, credits }) {
             <div className="card text-center border-purple-500 border-2">
               <div className="text-purple-500 text-sm font-semibold mb-2">Most popular</div>
               <h3 className="text-lg font-semibold text-gray-400 mb-2">Pro</h3>
-              <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">3</div>
-              <p className="text-gray-500 mb-6">songs</p>
-              <div className="text-2xl font-medium text-white mb-6">$17</div>
-              <p className="text-sm text-gray-600 mb-4">6 minutes of music</p>
+              <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">6</div>
+              <p className="text-gray-500 mb-6">minutes of music</p>
+              <div className="text-2xl font-medium text-white mb-6">$15</div>
               {user ? (
                 <Link href="/checkout-paddle">
                   <button className="btn-primary w-full">
@@ -186,10 +184,9 @@ export default function Home({ user, credits }) {
             {/* Package 3 */}
             <div className="card text-center">
               <h3 className="text-lg font-semibold text-gray-400 mb-2">Creator</h3>
-              <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">5</div>
-              <p className="text-gray-500 mb-6">songs</p>
-              <div className="text-2xl font-medium text-white mb-6">$27</div>
-              <p className="text-sm text-gray-600 mb-4">10 minutes of music</p>
+              <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">10</div>
+              <p className="text-gray-500 mb-6">minutes of music</p>
+              <div className="text-2xl font-medium text-white mb-6">$25</div>
               {user ? (
                 <Link href="/checkout-paddle">
                   <button className="btn-outline w-full">
@@ -208,10 +205,9 @@ export default function Home({ user, credits }) {
             {/* Package 4 */}
             <div className="card text-center">
               <h3 className="text-lg font-semibold text-gray-400 mb-2">Studio</h3>
-              <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">10</div>
-              <p className="text-gray-500 mb-6">songs</p>
-              <div className="text-2xl font-medium text-white mb-6">$55</div>
-              <p className="text-sm text-gray-600 mb-4">20 minutes of music</p>
+              <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">20</div>
+              <p className="text-gray-500 mb-6">minutes of music</p>
+              <div className="text-2xl font-medium text-white mb-6">$50</div>
               {user ? (
                 <Link href="/checkout-paddle">
                   <button className="btn-outline w-full">
