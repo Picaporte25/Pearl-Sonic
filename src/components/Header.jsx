@@ -6,7 +6,8 @@ export default function Header({ user = null, credits = 0 }) {
 
   const handleLogout = () => {
     document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    router.push('/login');
+    // Force full page reload to clear any cached user state
+    window.location.href = '/login';
   };
 
   return (
