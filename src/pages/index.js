@@ -63,7 +63,7 @@ export default function Home({ user, credits }) {
               <h3 className="text-xl font-semibold text-white mb-4">Example Creation</h3>
               <p className="text-gray-400 mb-2 text-sm">Prompt:</p>
               <p className="text-gray-300 mb-6 italic">
-                "Instrumental Groove Metal track, super heavy downtuned guitar riffs, aggressive palm-muted chugs, double bass drums, technical drum fills, dark atmospheric ambient layers in background, emotional melodic lead guitar sections, cinematic build-ups, powerful breakdowns, high production quality, wide stereo mix, no vocals, intense and immersive mood."
+                "Heavy instrumental Groove Metal with riffs, double bass drums, dark atmospheres, melodic leads. No vocals."
               </p>
               <audio controls className="w-full">
                 <source src="/music/Groove metal track.mp3" type="audio/mpeg" />
@@ -118,6 +118,124 @@ export default function Home({ user, credits }) {
               <h3 className="text-xl font-medium mb-2 text-white">Download and Use</h3>
               <p className="text-gray-400">
                 Listen, download and use your music in any project. It's yours forever!
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section className="py-20 bg-gradient-to-b from-transparent via-purple-900/10 to-transparent">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl sm:text-4xl font-medium text-center mb-4 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent">
+            Why Choose Pearl-Sonic?
+          </h2>
+          <p className="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
+            Create professional, royalty-free music in seconds with AI technology
+          </p>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Benefit 1 */}
+            <div className="card text-center p-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">100% Copyright Free</h3>
+              <p className="text-sm text-gray-400">
+                Use your music in videos, streams, podcasts, and any project without copyright issues
+              </p>
+            </div>
+
+            {/* Benefit 2 */}
+            <div className="card text-center p-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Create in Seconds</h3>
+              <p className="text-sm text-gray-400">
+                Generate original music in just seconds. No waiting, no queues
+              </p>
+            </div>
+
+            {/* Benefit 3 */}
+            <div className="card text-center p-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">100% Yours Forever</h3>
+              <p className="text-sm text-gray-400">
+                Every song you create is uniquely yours. Own it forever, no limitations
+              </p>
+            </div>
+
+            {/* Benefit 4 */}
+            <div className="card text-center p-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-500/20 to-red-500/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Affordable Pricing</h3>
+              <p className="text-sm text-gray-400">
+                Pay only for what you use. No monthly fees, no subscriptions required
+              </p>
+            </div>
+
+            {/* Benefit 5 */}
+            <div className="card text-center p-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-500/20 to-rose-500/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Commercial Use Allowed</h3>
+              <p className="text-sm text-gray-400">
+                Use in YouTube videos, TikTok, Instagram, commercial ads, and more
+              </p>
+            </div>
+
+            {/* Benefit 6 */}
+            <div className="card text-center p-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-teal-500/20 to-green-500/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">High Quality Audio</h3>
+              <p className="text-sm text-gray-400">
+                Professional studio quality output. MP3 and WAV formats available
+              </p>
+            </div>
+
+            {/* Benefit 7 */}
+            <div className="card text-center p-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-yellow-500/20 to-amber-500/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Unlimited Creativity</h3>
+              <p className="text-sm text-gray-400">
+                Choose from 40+ genres, custom moods, and any duration you want
+              </p>
+            </div>
+
+            {/* Benefit 8 */}
+            <div className="card text-center p-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">No Attribution Needed</h3>
+              <p className="text-sm text-gray-400">
+                No need to credit us. Your music, your rules
               </p>
             </div>
           </div>

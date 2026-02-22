@@ -1,12 +1,23 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
+const MUSIC_GENRES = [
+  'Pop', 'Rock', 'Hip Hop', 'R&B', 'Electronic', 'Jazz', 'Blues', 'Classical',
+  'Country', 'Reggae', 'Funk', 'Soul', 'Metal', 'Punk', 'Folk', 'Disco',
+  'House', 'Techno', 'Trance', 'Ambient', 'Chillout', 'Lo-Fi', 'Trap', 'Dubstep',
+  'Drum & Bass', 'Reggaeton', 'Salsa', 'Bachata', 'Merengue', 'K-Pop',
+  'Indie', 'Alternative', 'Synthwave', 'Gospel', 'Opera', 'Orchestral', 'Soundtrack',
+  'Downtempo', 'Trip-Hop', 'Breakbeat', 'Hardstyle', 'Progressive'
+];
+
 export default function MusicGenerator({ userCredits, onCreditUpdate }) {
   const router = useRouter();
   const [prompt, setPrompt] = useState('');
   const [duration, setDuration] = useState(120);
   const [forceInstrumental, setForceInstrumental] = useState(false);
   const [outputFormat, setOutputFormat] = useState('mp3_44100_128');
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const [mood, setMood] = useState('');
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -30,13 +41,22 @@ export default function MusicGenerator({ userCredits, onCreditUpdate }) {
     setGenerating(true);
 
     try {
+      // Build enhanced prompt with genre and mood
+      let enhancedPrompt = prompt.trim();
+      if (selectedGenre) {
+        enhancedPrompt = `${selectedGenre} track - ${enhancedPrompt}`;
+      }
+      if (mood) {
+        enhancedPrompt += `. ${mood} mood`;
+      }
+
       const response = await fetch('/api/music/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: prompt.trim(),
+          prompt: enhancedPrompt,
           duration: duration * 1000, // Convert to milliseconds
           forceInstrumental,
           outputFormat,
@@ -75,6 +95,51 @@ export default function MusicGenerator({ userCredits, onCreditUpdate }) {
       <h2 className="text-2xl font-semibold mb-6 text-white">Create Your Music</h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Genre Selector */}
+        <div>
+          <label htmlFor="genre" className="block text-sm font-medium text-gray-300 mb-2">
+            Genre (optional)
+          </label>
+          <select
+            id="genre"
+            value={selectedGenre}
+            onChange={(e) => setSelectedGenre(e.target.value)}
+            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            disabled={generating}
+          >
+            <option value="">Select a genre...</option>
+            {MUSIC_GENRES.map((genre) => (
+              <option key={genre} value={genre}>{genre}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Mood Selector */}
+        <div>
+          <label htmlFor="mood" className="block text-sm font-medium text-gray-300 mb-2">
+            Mood (optional)
+          </label>
+          <select
+            id="mood"
+            value={mood}
+            onChange={(e) => setMood(e.target.value)}
+            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            disabled={generating}
+          >
+            <option value="">Select a mood...</option>
+            <option value="happy">Happy & Uplifting</option>
+            <option value="sad">Sad & Emotional</option>
+            <option value="energetic">Energetic & Powerful</option>
+            <option value="calm">Calm & Relaxing</option>
+            <option value="dark">Dark & Intense</option>
+            <option value="romantic">Romantic & Soft</option>
+            <option value="mysterious">Mysterious & Atmospheric</option>
+            <option value="epic">Epic & Cinematic</option>
+            <option value="playful">Playful & Fun</option>
+            <option value="melancholic">Melancholic & Deep</option>
+          </select>
+        </div>
+
         {/* Prompt Input */}
         <div>
           <label htmlFor="prompt" className="block text-sm font-medium text-gray-300 mb-2">
