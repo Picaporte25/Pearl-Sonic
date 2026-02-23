@@ -38,7 +38,7 @@ export default function LoginPage() {
       }
 
       // Cookie is now set by the server with security flags
-      router.push('/generate');
+      router.push('/');
     } catch (err) {
       setError(err.message);
     } finally {
