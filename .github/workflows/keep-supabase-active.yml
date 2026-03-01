@@ -1,0 +1,27 @@
+name: Keep Supabase Active
+
+# Ejecutar cada 6 horas para mantener actividad en el proyecto
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Cada 6 horas: 0, 6, 12, 18 UTC
+  workflow_dispatch:  # También permite ejecutarlo manualmente
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Ping Supabase Database
+        run: |
+          # Realizar una consulta simple a la base de datos
+          # Esto cuenta como actividad en el proyecto
+          response=$(curl -s -X POST \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/users?select=count" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: count=exact")
+
+          echo "Respuesta: $response"
+          echo "✅ Supabase ping exitoso - $(date)"
