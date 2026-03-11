@@ -1,11 +1,27 @@
 // API endpoint to create Paddle checkout session
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '1mb',
+    },
+  },
+};
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
+    // Log the entire request for debugging
+    console.log('=== PADDLE CHECKOUT REQUEST ===');
+    console.log('Method:', req.method);
+    console.log('Headers:', JSON.stringify(req.headers));
+    console.log('Body (raw):', JSON.stringify(req.body));
+
     const { priceId, userId, email } = req.body;
+
+    console.log('Parsed body:', { priceId, userId, email });
 
     // Validate inputs
     if (!priceId || !userId || !email) {
@@ -17,6 +33,7 @@ export default async function handler(req, res) {
     const apiKey = process.env.PADDLE_API_KEY;
     console.log('Environment check - PADDLE_API_KEY exists:', !!apiKey);
     console.log('Environment check - API key length:', apiKey ? apiKey.length : 0);
+    console.log('API key value (first 10 chars):', apiKey ? apiKey.substring(0, 10) : 'N/A');
 
     if (!apiKey || apiKey === 'your-paddle-api-key-here') {
       console.error('Paddle API key not configured');
