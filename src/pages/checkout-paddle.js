@@ -32,7 +32,7 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
   const [error, setError] = useState('');
   const [billingType, setBillingType] = useState('one-time');
 
-  const handleSubscribe = (priceId) => {
+  const handleSubscribe = async (priceId) => {
     if (!user) {
       router.push('/login');
       return;
@@ -42,9 +42,27 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
     setError('');
 
     try {
-      const checkoutUrl = `https://checkout.paddle.com/checkout/custom?products=${priceId}&email=${encodeURIComponent(user.email)}&passthrough=${encodeURIComponent(JSON.stringify({ userId: user.id }))}&successUrl=${encodeURIComponent(`${window.location.origin}/checkout-paddle/success`)}`;
+      // Call our API to create checkout session
+      const response = await fetch('/api/payment/paddle-create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          priceId,
+          userId: user.id,
+          email: user.email,
+        }),
+      });
 
-      window.open(checkoutUrl, '_blank', 'noopener,noreferrer');
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      // Redirect to Paddle checkout
+      window.location.href = data.checkoutUrl;
 
     } catch (err) {
       console.error('Payment error:', err);
