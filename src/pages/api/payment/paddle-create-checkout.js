@@ -15,6 +15,9 @@ export default async function handler(req, res) {
 
     // Check if Paddle API key is configured
     const apiKey = process.env.PADDLE_API_KEY;
+    console.log('Environment check - PADDLE_API_KEY exists:', !!apiKey);
+    console.log('Environment check - API key length:', apiKey ? apiKey.length : 0);
+
     if (!apiKey || apiKey === 'your-paddle-api-key-here') {
       console.error('Paddle API key not configured');
       return res.status(500).json({
