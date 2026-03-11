@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
 import { getUserFromToken } from '@/lib/auth';
@@ -30,53 +30,11 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
   const [credits] = useState(serverCredits);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [isPaddleReady, setIsPaddleReady] = useState(false);
-  const [showSetupMessage, setShowSetupMessage] = useState(true);
-  const [billingType, setBillingType] = useState('one-time'); // 'one-time' or 'monthly' (HIDDEN)
+  const [billingType, setBillingType] = useState('one-time');
 
-  useEffect(() => {
-    // Initialize Paddle when component mounts
-    const initPaddle = async () => {
-      if (!window.Paddle) {
-        console.error('Paddle not loaded yet');
-        return;
-      }
-
-      try {
-        await window.Paddle.initialize({
-          token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
-          environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'production',
-        });
-
-        setIsPaddleReady(true);
-        setShowSetupMessage(false);
-        console.log('Paddle initialized successfully');
-      } catch (err) {
-        console.error('Error initializing Paddle:', err);
-        setError('Failed to initialize payment system. Please try again later.');
-      }
-    };
-
-    // Wait for Paddle to be available and initialize
-    const checkPaddleAndInit = () => {
-      if (window.Paddle) {
-        initPaddle();
-      } else {
-        setTimeout(checkPaddleAndInit, 100);
-      }
-    };
-
-    checkPaddleAndInit();
-  }, []);
-
-  const handleSubscribe = async (priceId) => {
+  const handleSubscribe = (priceId) => {
     if (!user) {
       router.push('/login');
-      return;
-    }
-
-    if (!isPaddleReady || !window.Paddle) {
-      alert('Paddle is not ready yet. Please refresh the page and try again.');
       return;
     }
 
@@ -84,25 +42,9 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
     setError('');
 
     try {
-      // Open Paddle checkout directly (no need for server endpoint)
-      window.Paddle.Checkout.open({
-        items: [{
-          priceId: priceId,
-          quantity: 1,
-        }],
-        customer: {
-          email: user.email,
-        },
-        customData: {
-          userId: user.id,
-        },
-        settings: {
-          displayMode: 'overlay',
-          theme: 'dark',
-          successUrl: `${window.location.origin}/checkout-paddle/success`,
-          allowLogout: false,
-        },
-      });
+      const checkoutUrl = `https://checkout.paddle.com/checkout/custom?products=${priceId}&email=${encodeURIComponent(user.email)}&passthrough=${encodeURIComponent(JSON.stringify({ userId: user.id }))}&successUrl=${encodeURIComponent(`${window.location.origin}/checkout-paddle/success`)}`;
+
+      window.open(checkoutUrl, '_blank', 'noopener,noreferrer');
 
     } catch (err) {
       console.error('Payment error:', err);
@@ -111,21 +53,6 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
       setLoading(false);
     }
   };
-
-  if (loading && isPaddleReady) {
-    return (
-      <Layout title="Buy Credits - Sonic-Wave" user={user} credits={credits}>
-        <div className="max-w-6xl mx-auto px-4 py-12">
-          <div className="flex items-center justify-center min-h-[50vh]">
-            <div className="text-center">
-              <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-gray-400">Processing...</p>
-            </div>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
 
   const prices = billingType === 'one-time' ? PADDLE_PRICES_ONETIME : PADDLE_PRICES_MONTHLY;
 
@@ -144,53 +71,11 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
           </p>
         </div>
 
-        {showSetupMessage && !isPaddleReady && (
-          <div className="bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 px-6 py-4 rounded-lg mb-8">
-            <div className="flex items-start gap-3">
-              <svg className="w-6 h-6 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <div>
-                <p className="font-semibold mb-1">Paddle Payment Loading...</p>
-                <p className="text-sm">
-                  Please wait while Paddle initializes, or refresh the page.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {error && (
           <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-8">
             {error}
           </div>
         )}
-
-        {/* Billing Type Toggle - HIDDEN: Monthly subscriptions not shown */}
-        {/* <div className="flex justify-center mb-8">
-          <div className="inline-flex bg-[#222] rounded-lg p-1 border border-[#333]">
-            <button
-              onClick={() => setBillingType('one-time')}
-              className={`px-6 py-2 rounded-md font-medium transition-all ${
-                billingType === 'one-time'
-                  ? 'bg-purple-500 text-white'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              One-Time Purchase
-            </button>
-            <button
-              onClick={() => setBillingType('monthly')}
-              className={`px-6 py-2 rounded-md font-medium transition-all ${
-                billingType === 'monthly'
-                  ? 'bg-purple-500 text-white'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              Monthly Subscription
-            </button>
-          </div>
-        </div> */}
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {prices.map((plan) => (
@@ -232,27 +117,6 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
           ))}
         </div>
 
-        {/* Subscription Info - HIDDEN: Monthly subscriptions not shown */}
-        {/* {billingType === 'monthly' && (
-          <div className="bg-green-500/10 border border-green-500/30 text-green-400 px-6 py-4 rounded-lg mb-12">
-            <div className="flex items-start gap-3">
-              <svg className="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <div>
-                <p className="font-semibold mb-2">Monthly Subscription Benefits</p>
-                <ul className="text-sm space-y-1">
-                  <li>• Pay less per month with subscription</li>
-                  <li>• Credits added automatically every month</li>
-                  <li>• Cancel anytime from your profile</li>
-                  <li>• Keep all credits you've earned</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        )} */}
-
-        {/* Info Section */}
         <div className="text-center mt-12">
           <div className="card inline-block p-6 text-left">
             <h3 className="text-xl font-semibold text-white mb-4 text-center">Why Choose Sonic-Wave?</h3>
