@@ -35,46 +35,20 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
   const [billingType, setBillingType] = useState('one-time'); // 'one-time' or 'monthly' (HIDDEN)
 
   useEffect(() => {
-    loadPaddle();
-  }, []);
-
-  // Load Paddle SDK dynamically
-  const loadPaddle = () => {
-    // Check if environment variables are set
-    const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
-
-    if (!token) {
-      setIsPaddleReady(false);
-      return;
-    }
-
-    // Load Paddle.js
-    const script = document.createElement('script');
-    script.src = 'https://cdn.paddle.com/paddle/v2/paddle.js';
-    script.async = true;
-
-    script.onload = () => {
-      // Initialize Paddle
-      try {
-        window.Paddle.initialize({
-          token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
-          environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'production',
-        });
-
+    // Check if Paddle is initialized
+    const checkPaddleReady = () => {
+      if (window.Paddle && window.Paddle.Checkout) {
         setIsPaddleReady(true);
         setShowSetupMessage(false);
-      } catch (err) {
-        console.error('Error initializing Paddle:', err);
-        setError('Failed to initialize payment system. Please try again later.');
+      } else {
+        // Retry after a short delay
+        setTimeout(checkPaddleReady, 100);
       }
     };
 
-    script.onerror = () => {
-      setError('Failed to load payment system. Please refresh the page.');
-    };
-
-    document.body.appendChild(script);
-  };
+    // Start checking
+    checkPaddleReady();
+  }, []);
 
   const handleSubscribe = async (priceId) => {
     if (!user) {
@@ -82,8 +56,8 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
       return;
     }
 
-    if (!isPaddleReady) {
-      alert('Paddle is not configured yet.\n\nTo enable Paddle payments:\n1. Check that Vercel deployment finished\n2. Verify NEXT_PUBLIC_PADDLE_CLIENT_TOKEN is set in Vercel\n3. Verify NEXT_PUBLIC_PADDLE_ENVIRONMENT is set to "production"');
+    if (!isPaddleReady || !window.Paddle) {
+      alert('Paddle is not ready yet. Please refresh the page and try again.');
       return;
     }
 
@@ -91,27 +65,7 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
     setError('');
 
     try {
-      // Create checkout session via your API
-      const response = await fetch('/api/payment/paddle-create-checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${document.cookie.match(/token=([^;]+)(;|$)/)?.[1] || ''}`,
-        },
-        body: JSON.stringify({
-          priceId,
-          userId: user.id,
-          email: user.email,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Error creating checkout session');
-      }
-
-      // Open Paddle checkout
+      // Open Paddle checkout directly (no need for server endpoint)
       window.Paddle.Checkout.open({
         items: [{
           priceId: priceId,
@@ -178,17 +132,10 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div>
-                <p className="font-semibold mb-1">Paddle Payment Setup Required</p>
+                <p className="font-semibold mb-1">Paddle Payment Loading...</p>
                 <p className="text-sm">
-                  To enable Paddle payments, you need to:
+                  Please wait while Paddle initializes, or refresh the page.
                 </p>
-                <ol className="text-sm mt-2 ml-4 list-decimal space-y-1">
-                  <li>Create account at <a href="https://www.paddle.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-yellow-300">paddle.com</a></li>
-                  <li>Create 8 products (4 one-time + 4 monthly) and copy Price IDs</li>
-                  <li>Get your API token from Developer settings</li>
-                  <li>Add <code className="bg-yellow-500/20 px-1 rounded">NEXT_PUBLIC_PADDLE_TOKEN</code> to .env.local</li>
-                  <li>Update Price IDs in <code className="bg-yellow-500/20 px-1 rounded">src/lib/paddle.js</code></li>
-                </ol>
               </div>
             </div>
           </div>
