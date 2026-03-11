@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@paddle/paddle-js": "^1.6.2",
     "@paypal/react-paypal-js": "^8.9.2",
     "@supabase/supabase-js": "^2.39.0",
     "axios": "^1.7.0",

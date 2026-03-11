@@ -41,7 +41,7 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
   // Load Paddle SDK dynamically
   const loadPaddle = () => {
     // Check if environment variables are set
-    const token = process.env.NEXT_PUBLIC_PADDLE_TOKEN;
+    const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
 
     if (!token) {
       setIsPaddleReady(false);
@@ -57,8 +57,8 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
       // Initialize Paddle
       try {
         window.Paddle.initialize({
-          token: token,
-          environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'sandbox',
+          token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
+          environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'production',
         });
 
         setIsPaddleReady(true);
@@ -83,7 +83,7 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
     }
 
     if (!isPaddleReady) {
-      alert('Paddle is not configured yet.\n\nTo enable Paddle payments:\n1. Create account at https://www.paddle.com\n2. Get your API token\n3. Create products in the dashboard\n4. Add NEXT_PUBLIC_PADDLE_TOKEN to your .env.local file\n5. Add the actual Price IDs to src/lib/paddle.js');
+      alert('Paddle is not configured yet.\n\nTo enable Paddle payments:\n1. Check that Vercel deployment finished\n2. Verify NEXT_PUBLIC_PADDLE_CLIENT_TOKEN is set in Vercel\n3. Verify NEXT_PUBLIC_PADDLE_ENVIRONMENT is set to "production"');
       return;
     }
 

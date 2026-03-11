@@ -9,7 +9,10 @@
       "Bash(grep:*)",
       "Bash(git commit:*)",
       "Bash(tasklist:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "WebSearch",
+      "Bash(git push)",
+      "Bash(git remote set-url:*)"
     ]
   }
 }

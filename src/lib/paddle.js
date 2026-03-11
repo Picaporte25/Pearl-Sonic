@@ -119,13 +119,13 @@ export const SUBSCRIPTION_TYPES = {
 
 // Get credits from price ID
 export const getCreditsFromPriceId = (priceId) => {
-  const plan = PADDLE_PRICES.find(p => p.id === priceId);
+  const plan = PADDLE_PRICES_ONETIME.find(p => p.id === priceId);
   return plan ? plan.credits : 0;
 };
 
 // Get plan from price ID
 export const getPlanFromPriceId = (priceId) => {
-  return PADDLE_PRICES.find(p => p.id === priceId);
+  return PADDLE_PRICES_ONETIME.find(p => p.id === priceId);
 };
 
 // Calculate credits from price
