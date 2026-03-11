@@ -35,19 +35,38 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
   const [billingType, setBillingType] = useState('one-time'); // 'one-time' or 'monthly' (HIDDEN)
 
   useEffect(() => {
-    // Check if Paddle is initialized
-    const checkPaddleReady = () => {
-      if (window.Paddle && window.Paddle.Checkout) {
+    // Initialize Paddle when component mounts
+    const initPaddle = async () => {
+      if (!window.Paddle) {
+        console.error('Paddle not loaded yet');
+        return;
+      }
+
+      try {
+        await window.Paddle.initialize({
+          token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
+          environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT || 'production',
+        });
+
         setIsPaddleReady(true);
         setShowSetupMessage(false);
-      } else {
-        // Retry after a short delay
-        setTimeout(checkPaddleReady, 100);
+        console.log('Paddle initialized successfully');
+      } catch (err) {
+        console.error('Error initializing Paddle:', err);
+        setError('Failed to initialize payment system. Please try again later.');
       }
     };
 
-    // Start checking
-    checkPaddleReady();
+    // Wait for Paddle to be available and initialize
+    const checkPaddleAndInit = () => {
+      if (window.Paddle) {
+        initPaddle();
+      } else {
+        setTimeout(checkPaddleAndInit, 100);
+      }
+    };
+
+    checkPaddleAndInit();
   }, []);
 
   const handleSubscribe = async (priceId) => {
