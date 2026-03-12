@@ -42,12 +42,15 @@ export default async function handler(req, res) {
       });
     }
 
-    const checkoutUrl = data.data?.checkout?.url;
+    const transactionId = data.data?.id;
+    const checkoutBase = isSandbox
+      ? 'https://sandbox-checkout.paddle.com'
+      : 'https://checkout.paddle.com';
 
     return res.status(200).json({
       success: true,
-      transactionId: data.data?.id,
-      checkoutUrl,
+      transactionId,
+      checkoutUrl: `${checkoutBase}/?transactionId=${transactionId}`,
     });
 
   } catch (error) {

@@ -62,12 +62,8 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
         throw new Error(data.error || 'Failed to create checkout session');
       }
 
-      // Redirect to Paddle checkout page
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else {
-        throw new Error('No checkout URL returned from Paddle');
-      }
+      // Redirect to Paddle hosted checkout
+      window.location.href = data.checkoutUrl;
 
     } catch (err) {
       console.error('Payment error:', err);
