@@ -30,9 +30,6 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         items: [{ price_id: priceId, quantity: 1 }],
         custom_data: { userId, email },
-        checkout: {
-          url: 'https://pearl-sonic.vercel.app/checkout-paddle/success',
-        },
       }),
     });
 
