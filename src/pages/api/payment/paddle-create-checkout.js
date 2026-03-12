@@ -31,7 +31,7 @@ export default async function handler(req, res) {
         items: [{ price_id: priceId, quantity: 1 }],
         custom_data: { userId, email },
         checkout: {
-          url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout-paddle/success`,
+          url: 'https://pearl-sonic.vercel.app/checkout-paddle/success',
         },
       }),
     });
