@@ -53,20 +53,17 @@ export default async function handler(req, res) {
         },
       ],
       customer_email: email,
-      settings: {
-        success_url: 'https://pearl-sonic.vercel.app/checkout-paddle/success',
-        cancel_url: 'https://pearl-sonic.vercel.app/checkout-paddle',
+      success_url: 'https://pearl-sonic.vercel.app/checkout-paddle/success',
+      cancel_url: 'https://pearl-sonic.vercel.app/checkout-paddle',
+      custom_data: {
+        userId: userId,
       },
     };
-
-    // Encode URLs to prevent errors
-    checkoutData.settings.success_url = encodeURIComponent(checkoutData.settings.success_url);
-    checkoutData.settings.cancel_url = encodeURIComponent(checkoutData.settings.cancel_url);
 
     console.log('Sending to Paddle API:', JSON.stringify(checkoutData, null, 2));
 
     // Call Paddle API
-    const response = await fetch('https://api.paddle.com/transactions/checkout-session', {
+    const response = await fetch('https://api.paddle.com/checkout-sessions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
@@ -96,7 +93,7 @@ export default async function handler(req, res) {
     // Return the checkout URL
     return res.status(200).json({
       success: true,
-      checkoutUrl: data.data?.url,
+      checkoutUrl: data.data?.checkout_url,
     });
 
   } catch (error) {
