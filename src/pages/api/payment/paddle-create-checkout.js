@@ -54,8 +54,8 @@ export default async function handler(req, res) {
       ],
       customer_email: email,
       settings: {
-        success_url: `${req.headers.origin || 'https://pearl-sonic.vercel.app'}/checkout-paddle/success`,
-        cancel_url: `${req.headers.origin || 'https://pearl-sonic.vercel.app'}/checkout-paddle`,
+        success_url: 'https://pearl-sonic.vercel.app/checkout-paddle/success',
+        cancel_url: 'https://pearl-sonic.vercel.app/checkout-paddle',
       },
     };
 
