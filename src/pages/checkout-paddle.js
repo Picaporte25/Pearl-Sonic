@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
 import { getUserFromToken } from '@/lib/auth';
@@ -31,6 +31,22 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (window.Paddle && !window.__paddleInitialized) {
+        window.Paddle.Environment.set(
+          process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === 'sandbox' ? 'sandbox' : 'production'
+        );
+        window.Paddle.Initialize({
+          token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
+        });
+        window.__paddleInitialized = true;
+        clearInterval(interval);
+      }
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleSubscribe = async (priceId) => {
     if (!user) {
       router.push('/login');
@@ -39,10 +55,6 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
 
     setLoading(true);
     setError('');
-
-    console.log('=== FRONTEND: Starting checkout process ===');
-    console.log('User:', user?.id, user?.email);
-    console.log('Price ID:', priceId);
 
     try {
       // Create transaction via API
@@ -62,8 +74,13 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
         throw new Error(data.error || 'Failed to create checkout session');
       }
 
-      // Redirect to Paddle hosted checkout
-      window.location.href = data.checkoutUrl;
+      // Open Paddle checkout overlay
+      if (!window.Paddle) {
+        throw new Error('Paddle not loaded. Please refresh.');
+      }
+      window.Paddle.Checkout.open({
+        transactionId: data.transactionId,
+      });
 
     } catch (err) {
       console.error('Payment error:', err);
