@@ -14,7 +14,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
+ 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
