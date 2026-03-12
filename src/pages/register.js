@@ -49,8 +49,8 @@ export default function RegisterPage() {
         throw new Error(data.error || 'Error registering');
       }
 
-      // Cookie is now set by the server with security flags
-      router.push('/generate');
+      // Full page reload to ensure cookie is sent with the next request
+      window.location.href = '/generate';
     } catch (err) {
       setError(err.message);
     } finally {

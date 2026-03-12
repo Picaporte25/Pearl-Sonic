@@ -37,8 +37,8 @@ export default function LoginPage() {
         throw new Error(data.error || 'Error logging in');
       }
 
-      // Cookie is now set by the server with security flags
-      router.push('/');
+      // Full page reload to ensure cookie is sent with the next request
+      window.location.href = '/';
     } catch (err) {
       setError(err.message);
     } finally {

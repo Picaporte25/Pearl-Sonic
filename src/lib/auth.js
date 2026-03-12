@@ -37,7 +37,7 @@ export async function comparePassword(password, hashedPassword) {
 // Obtener token de cookies
 export function getTokenFromCookies(req) {
   const cookies = req.headers.cookie || '';
-  const tokenMatch = cookies.match(/token=([^;]+)/);
+  const tokenMatch = cookies.match(/(?:^|;\s*)token=([^;]+)/);
   return tokenMatch ? tokenMatch[1] : null;
 }
 
