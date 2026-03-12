@@ -62,21 +62,12 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
         throw new Error(data.error || 'Failed to create checkout session');
       }
 
-      // Open Paddle overlay checkout
-      if (!window.Paddle) {
-        throw new Error('Paddle.js not loaded. Please refresh the page.');
+      // Redirect to Paddle checkout page
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        throw new Error('No checkout URL returned from Paddle');
       }
-
-      window.Paddle.Initialize({
-        token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
-      });
-
-      window.Paddle.Checkout.open({
-        transactionId: data.transactionId,
-        settings: {
-          successUrl: window.location.origin + '/checkout-paddle/success',
-        },
-      });
 
     } catch (err) {
       console.error('Payment error:', err);

@@ -1,4 +1,4 @@
-// API endpoint to create Paddle transaction for overlay checkout
+// API endpoint to create Paddle transaction and return checkout URL
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -18,9 +18,9 @@ export default async function handler(req, res) {
       });
     }
 
-    // Create transaction using Paddle Billing API
     const isSandbox = process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === 'sandbox';
     const baseUrl = isSandbox ? 'https://sandbox-api.paddle.com' : 'https://api.paddle.com';
+
     const response = await fetch(`${baseUrl}/transactions`, {
       method: 'POST',
       headers: {
@@ -30,6 +30,9 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         items: [{ price_id: priceId, quantity: 1 }],
         custom_data: { userId, email },
+        checkout: {
+          url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout-paddle/success`,
+        },
       }),
     });
 
@@ -42,10 +45,12 @@ export default async function handler(req, res) {
       });
     }
 
-    // Return transaction ID for Paddle.js overlay checkout
+    const checkoutUrl = data.data?.checkout?.url;
+
     return res.status(200).json({
       success: true,
       transactionId: data.data?.id,
+      checkoutUrl,
     });
 
   } catch (error) {
