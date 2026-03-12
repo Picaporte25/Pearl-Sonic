@@ -63,7 +63,7 @@ export default async function handler(req, res) {
     console.log('Sending to Paddle API:', JSON.stringify(checkoutData, null, 2));
 
     // Call Paddle API
-    const response = await fetch('https://api.paddle.com/checkout-sessions', {
+    const response = await fetch('https://api.paddle.com/checkout/sessions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
