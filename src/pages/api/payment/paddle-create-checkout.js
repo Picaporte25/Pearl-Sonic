@@ -59,6 +59,10 @@ export default async function handler(req, res) {
       },
     };
 
+    // Encode URLs to prevent errors
+    checkoutData.settings.success_url = encodeURIComponent(checkoutData.settings.success_url);
+    checkoutData.settings.cancel_url = encodeURIComponent(checkoutData.settings.cancel_url);
+
     console.log('Sending to Paddle API:', JSON.stringify(checkoutData, null, 2));
 
     // Call Paddle API
