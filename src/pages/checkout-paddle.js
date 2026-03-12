@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
 import { getUserFromToken } from '@/lib/auth';
-import { PADDLE_PRICES_ONETIME, PADDLE_PRICES_MONTHLY, formatPrice } from '@/lib/paddle';
+import { PADDLE_PRICES_ONETIME, formatPrice } from '@/lib/paddle';
 
 export async function getServerSideProps(context) {
   const user = await getUserFromToken(context);
@@ -30,7 +30,6 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
   const [credits] = useState(serverCredits);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [billingType, setBillingType] = useState('one-time');
 
   const handleSubscribe = async (priceId) => {
     if (!user) {
@@ -81,7 +80,7 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
     }
   };
 
-  const prices = billingType === 'one-time' ? PADDLE_PRICES_ONETIME : PADDLE_PRICES_MONTHLY;
+  const prices = PADDLE_PRICES_ONETIME;
 
   return (
     <Layout title="Buy Credits - Sonic-Wave" user={user} credits={user?.credits || 0}>
@@ -113,9 +112,6 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
               {plan.name === 'Pro' && (
                 <div className="text-purple-500 text-sm font-semibold mb-2">Most popular</div>
               )}
-              {plan.billing === 'monthly' && (
-                <div className="text-green-500 text-xs font-semibold mb-2">SAVE WITH SUBSCRIPTION</div>
-              )}
               <h3 className="text-lg font-semibold text-gray-400 mb-2">{plan.name}</h3>
               <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">
                 {plan.credits * 2}
@@ -123,7 +119,6 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
               <p className="text-gray-500 mb-6">minutes of music</p>
               <div className="text-2xl font-medium text-white mb-6">
                 {formatPrice(plan.price)}
-                {plan.billing === 'monthly' && <span className="text-sm text-gray-400">/mo</span>}
               </div>
               <p className="text-sm text-gray-600 mb-6">{plan.credits * 2} minutes of music</p>
 
@@ -138,7 +133,7 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
                     : 'btn-outline'
                 }`}
               >
-                {loading ? 'Processing...' : plan.billing === 'monthly' ? 'Subscribe' : 'Buy Now'}
+                {loading ? 'Processing...' : 'Buy Now'}
               </button>
             </div>
           ))}

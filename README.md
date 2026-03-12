@@ -21,18 +21,13 @@ AI-Powered music generation platform - Create unique music for your projects.
 
 ## 📋 Pricing
 
-**Pay-as-you-go:**
-- 0.5 minutes = 0.5 credits ($2.50)
-- 1 minute = 1 credit ($5.00)
-- 2 minutes = 2 credits ($10.00)
-- 3 minutes = 3 credits ($15.00)
-- etc.
+**Pricing Plans (Paddle):**
+- Starter: $5.00 - 1 credit (2 minutes of music)
+- Pro: $15.00 - 3 credits (6 minutes of music)
+- Creator: $25.00 - 5 credits (10 minutes of music)
+- Studio: $50.00 - 10 credits (20 minutes of music)
 
-**Subscription Plans (Paddle):**
-- Starter: $4.99/month - 1 credit (2 min)
-- Pro: $14.99/month - 3 credits (6 min)
-- Creator: $23.99/month - 5 credits (10 min)
-- Studio: $47.99/month - 10 credits (20 min)
+Credits never expire!
 
 ## 🚀 Getting Started
 
@@ -76,16 +71,10 @@ NEXT_PUBLIC_PADDLE_TOKEN=your-public-paddle-client-token
 NEXT_PUBLIC_PADDLE_ENVIRONMENT=sandbox
 
 # Paddle Price IDs (get these from Paddle Dashboard)
-# One-time purchases
 NEXT_PUBLIC_PADDLE_PRICE_STARTER=pri_01hj...your-starter-price-id
 NEXT_PUBLIC_PADDLE_PRICE_PRO=pri_02k...your-pro-price-id
 NEXT_PUBLIC_PADDLE_PRICE_CREATOR=pri_03l...your-creator-price-id
 NEXT_PUBLIC_PADDLE_PRICE_STUDIO=pri_04m...your-studio-price-id
-# Monthly subscriptions
-NEXT_PUBLIC_PADDLE_PRICE_STARTER_MONTHLY=pri_05n...your-starter-monthly-price-id
-NEXT_PUBLIC_PADDLE_PRICE_PRO_MONTHLY=pri_06o...your-pro-monthly-price-id
-NEXT_PUBLIC_PADDLE_PRICE_CREATOR_MONTHLY=pri_07p...your-creator-monthly-price-id
-NEXT_PUBLIC_PADDLE_PRICE_STUDIO_MONTHLY=pri_08q...your-studio-monthly-price-id
 ```
 
 ### Database Setup
@@ -239,7 +228,6 @@ npm run lint
 - `GET /api/user/history` - Get music history
 - `GET /api/user/transactions` - Get payment history
 - `GET /api/user/profile` - Get user profile
-- `POST /api/subscription/cancel` - Cancel subscription
 
 ## 🚀 Deployment
 
@@ -278,10 +266,6 @@ Add all variables from `.env.local` section above to your Vercel project setting
 **credit_transactions:**
 - Records all credit purchases and usage
 - Tracks payment method and type
-
-**subscriptions:**
-- (Optional) Paddle subscription tracking
-- For managing active subscriptions
 
 ## 🧪 Testing
 

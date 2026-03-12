@@ -10,7 +10,6 @@ export default function ProfilePage() {
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
-  const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
     fetchUser();
@@ -58,43 +57,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleCancelSubscription = async () => {
-    if (!confirm(
-      'Are you sure you want to cancel your subscription?\n\n' +
-      '• Your subscription will be cancelled immediately\n' +
-      '• You will keep all the credits you have earned\n' +
-      '• No more monthly charges\n\n' +
-      'You can always subscribe again later.'
-    )) {
-      return;
-    }
-
-    setCancelling(true);
-    try {
-      const response = await fetch('/api/subscription/cancel', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Error cancelling subscription');
-      }
-
-      // Update user state
-      setUser(prev => ({ ...prev, subscription_active: false, paddle_subscription_id: null }));
-
-      alert('Subscription cancelled successfully. You will keep all your credits.');
-    } catch (err) {
-      console.error('Error cancelling subscription:', err);
-      alert(err.message || 'Failed to cancel subscription. Please try again.');
-    } finally {
-      setCancelling(false);
-    }
-  };
-
   if (loading) {
     return (
       <Layout title="Profile - Sonic-Wave">
@@ -104,8 +66,6 @@ export default function ProfilePage() {
       </Layout>
     );
   }
-
-  const hasActiveSubscription = user?.subscription_active && user?.paddle_subscription_id;
 
   return (
     <Layout title="Profile - Sonic-Wave" user={user} credits={user?.credits || 0}>
@@ -151,62 +111,7 @@ export default function ProfilePage() {
               </button>
             </div>
 
-            {/* Subscription Card */}
-            <div className="card">
-              <h3 className="text-lg font-semibold mb-4 text-white">Subscription Status</h3>
-              {hasActiveSubscription ? (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-                      <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">Active Subscription</p>
-                      <p className="text-gray-400 text-sm">You have an active monthly subscription</p>
-                    </div>
-                  </div>
-
-                  <div className="bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 px-4 py-3 rounded-lg">
-                    <p className="text-sm">
-                      Your credits are added automatically every month. You can cancel anytime below.
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={handleCancelSubscription}
-                    disabled={cancelling}
-                    className="w-full py-3 px-6 rounded-lg font-semibold transition-all bg-red-500 hover:bg-red-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {cancelling ? 'Cancelling...' : 'Cancel Subscription'}
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gray-500/20 flex items-center justify-center">
-                      <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">No Active Subscription</p>
-                      <p className="text-gray-400 text-sm">You don't have an active subscription</p>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => router.push('/checkout-paddle')}
-                    className="btn-primary"
-                  >
-                    Start a Subscription
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Email */}
+            {/* Account Information */}
             <div className="card">
               <h3 className="text-lg font-semibold mb-4 text-white">Account Information</h3>
               <div className="space-y-3">
