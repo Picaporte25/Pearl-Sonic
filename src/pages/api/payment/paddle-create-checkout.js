@@ -19,7 +19,9 @@ export default async function handler(req, res) {
     }
 
     // Create transaction using Paddle Billing API
-    const response = await fetch('https://api.paddle.com/transactions', {
+    const isSandbox = process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === 'sandbox';
+    const baseUrl = isSandbox ? 'https://sandbox-api.paddle.com' : 'https://api.paddle.com';
+    const response = await fetch(`${baseUrl}/transactions`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
