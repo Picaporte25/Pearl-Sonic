@@ -41,6 +41,10 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
     setLoading(true);
     setError('');
 
+    console.log('=== FRONTEND: Starting checkout process ===');
+    console.log('User:', user?.id, user?.email);
+    console.log('Price ID:', priceId);
+
     try {
       // Call our API to create checkout session
       const response = await fetch('/api/payment/paddle-create-checkout', {
@@ -55,13 +59,18 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
         }),
       });
 
+      console.log('Fetch response status:', response.status);
+      console.log('Fetch response ok:', response.ok);
+
       const data = await response.json();
+      console.log('Fetch response data:', data);
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to create checkout session');
       }
 
       // Redirect to Paddle checkout
+      console.log('Redirecting to checkout URL:', data.checkoutUrl);
       window.location.href = data.checkoutUrl;
 
     } catch (err) {
