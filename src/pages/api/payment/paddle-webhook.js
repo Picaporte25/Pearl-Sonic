@@ -71,11 +71,12 @@ export default async function handler(req, res) {
     // Handle different event types
     switch (event_type) {
       case 'transaction.paid':
-        await handlePaymentSucceeded(data, res);
+        // Only log — credits are added on transaction.completed to avoid double-processing
+        console.log('Transaction paid (waiting for completed):', data.id);
         break;
 
       case 'transaction.completed':
-        await handleTransactionCompleted(data, res);
+        await handlePaymentSucceeded(data, res);
         break;
 
       case 'transaction.payment_failed':
@@ -194,7 +195,3 @@ async function handlePaymentFailed(data) {
   }
 }
 
-// Handle transaction completed (one-time purchase)
-async function handleTransactionCompleted(data, res) {
-  return await handlePaymentSucceeded(data, res);
-}
