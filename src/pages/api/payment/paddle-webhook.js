@@ -39,25 +39,22 @@ export default async function handler(req, res) {
     const signature = req.headers['paddle-signature'];
     const webhookSecret = process.env.PADDLE_WEBHOOK_SECRET;
 
-    // In production, ALWAYS verify signature
-    // In development, you can skip this if you don't have a Paddle account yet
-    if (process.env.NODE_ENV === 'production') {
-      if (!signature) {
-        console.error('Missing paddle-signature header');
-        return res.status(401).json({ error: 'Missing signature' });
-      }
+    // Always verify webhook signature
+    if (!signature) {
+      console.error('Missing paddle-signature header');
+      return res.status(401).json({ error: 'Missing signature' });
+    }
 
-      if (!webhookSecret || webhookSecret === 'your_paddle_webhook_secret_here') {
-        console.error('PADDLE_WEBHOOK_SECRET not configured');
-        return res.status(500).json({ error: 'Server configuration error' });
-      }
+    if (!webhookSecret || webhookSecret === 'your_paddle_webhook_secret_here') {
+      console.error('PADDLE_WEBHOOK_SECRET not configured');
+      return res.status(500).json({ error: 'Server configuration error' });
+    }
 
-      const isValidSignature = verifyPaddleWebhookSignature(rawBody, signature, webhookSecret);
+    const isValidSignature = verifyPaddleWebhookSignature(rawBody, signature, webhookSecret);
 
-      if (!isValidSignature) {
-        console.error('Invalid webhook signature - possible spoofing attempt');
-        return res.status(401).json({ error: 'Invalid signature' });
-      }
+    if (!isValidSignature) {
+      console.error('Invalid webhook signature - possible spoofing attempt');
+      return res.status(401).json({ error: 'Invalid signature' });
     }
 
     // Parse JSON body only after verifying signature
