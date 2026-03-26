@@ -1,7 +1,7 @@
 // Paddle Webhook Handler
 // This endpoint receives payment notifications from Paddle
 
-import { supabase } from '@/lib/db';
+import { supabaseAdmin } from '@/lib/db';
 import { getCreditsFromPriceId, getPlanFromPriceId } from '@/lib/paddle';
 import { verifyPaddleWebhookSignature, getRawBody } from '@/lib/webhook-verify';
 import { rateLimit } from '@/lib/rate-limit';
@@ -62,35 +62,31 @@ export default async function handler(req, res) {
 
     // Parse JSON body only after verifying signature
     const body = JSON.parse(rawBody);
-    console.log('Paddle webhook received:', { event_name: body.event_name });
+    console.log('Paddle webhook received:', { event_type: body.event_type });
 
     // Add security headers
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
 
-    // Extract event data
-    const { event_name, data } = body;
+    // Extract event data (Paddle v2 uses event_type, not event_name)
+    const { event_type, data } = body;
 
     // Handle different event types
-    switch (event_name) {
-      case 'payment.succeeded':
+    switch (event_type) {
+      case 'transaction.paid':
         await handlePaymentSucceeded(data);
-        break;
-
-      case 'payment.completed':
-        await handlePaymentCompleted(data);
-        break;
-
-      case 'payment.failed':
-        await handlePaymentFailed(data);
         break;
 
       case 'transaction.completed':
         await handleTransactionCompleted(data);
         break;
 
+      case 'transaction.payment_failed':
+        await handlePaymentFailed(data);
+        break;
+
       default:
-        console.log(`Unhandled event: ${event_name}`);
+        console.log(`Unhandled event: ${event_type}`);
     }
 
     // Always return 200 to acknowledge receipt
@@ -115,29 +111,37 @@ async function handlePaymentSucceeded(data) {
 
     const userId = custom_data.userId;
 
-    // Calculate credits from price
+    // Calculate credits from price (Paddle v2: price ID is at items[].price.id)
     let creditsToAdd = 0;
     if (items && items.length > 0) {
-      const priceId = items[0].price_id;
+      const priceId = items[0].price?.id;
       creditsToAdd = getCreditsFromPriceId(priceId);
 
       // If we can't find plan, try to calculate from total amount
-      if (creditsToAdd === 0 && items[0].price) {
-        const priceAmount = items[0].price.gross; // in cents
-        const usdAmount = priceAmount / 100;
-        // Roughly 3 credits per USD
+      if (creditsToAdd === 0 && data.details?.totals?.total) {
+        const totalCents = parseInt(data.details.totals.total, 10);
+        const usdAmount = totalCents / 100;
         creditsToAdd = Math.floor(usdAmount * 3);
       }
     }
 
     console.log(`Adding ${creditsToAdd} credits to user ${userId} (one-time purchase)`);
 
-    // Update user credits
-    const { error: updateError } = await supabase
+    // Get current credits then update
+    const { data: user, error: fetchError } = await supabaseAdmin
       .from('users')
-      .update({
-        credits: supabase.raw(`credits + ${creditsToAdd}`),
-      })
+      .select('credits')
+      .eq('id', userId)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching user credits:', fetchError);
+      return;
+    }
+
+    const { error: updateError } = await supabaseAdmin
+      .from('users')
+      .update({ credits: (user.credits || 0) + creditsToAdd })
       .eq('id', userId);
 
     if (updateError) {
@@ -146,7 +150,7 @@ async function handlePaymentSucceeded(data) {
     }
 
     // Record transaction
-    await supabase.from('credit_transactions').insert({
+    await supabaseAdmin.from('credit_transactions').insert({
       user_id: userId,
       amount: creditsToAdd,
       type: 'purchase',
@@ -165,11 +169,6 @@ async function handlePaymentSucceeded(data) {
   }
 }
 
-// Handle completed payment (similar to succeeded)
-async function handlePaymentCompleted(data) {
-  return await handlePaymentSucceeded(data);
-}
-
 // Handle failed payment
 async function handlePaymentFailed(data) {
   console.log('Payment failed:', { id: data.id });
@@ -178,7 +177,7 @@ async function handlePaymentFailed(data) {
 
   if (custom_data && custom_data.userId) {
     // Log failed payment
-    await supabase.from('credit_transactions').insert({
+    await supabaseAdmin.from('credit_transactions').insert({
       user_id: custom_data.userId,
       amount: 0,
       type: 'payment_failed',
