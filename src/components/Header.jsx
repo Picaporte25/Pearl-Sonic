@@ -1,13 +1,15 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useUser } from '@/contexts/UserContext';
 
-export default function Header({ user = null, credits = 0 }) {
-  const router = useRouter();
+export default function Header({ user: userProp = null, credits: creditsProp = 0 }) {
+  const { user: contextUser, logout } = useUser();
+
+  // Context takes priority over props (real-time updates)
+  const user = contextUser || userProp;
+  const credits = contextUser?.credits ?? creditsProp;
 
   const handleLogout = () => {
-    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    // Force full page reload to clear any cached user state
-    window.location.href = '/login';
+    logout();
   };
 
   return (

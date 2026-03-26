@@ -71,11 +71,11 @@ export default async function handler(req, res) {
     // Handle different event types
     switch (event_type) {
       case 'transaction.paid':
-        await handlePaymentSucceeded(data);
+        await handlePaymentSucceeded(data, res);
         break;
 
       case 'transaction.completed':
-        await handleTransactionCompleted(data);
+        await handleTransactionCompleted(data, res);
         break;
 
       case 'transaction.payment_failed':
@@ -97,7 +97,7 @@ export default async function handler(req, res) {
 }
 
 // Handle successful payment (one-time purchase)
-async function handlePaymentSucceeded(data) {
+async function handlePaymentSucceeded(data, res) {
   try {
     const { custom_data, items, id: transactionId } = data;
 
@@ -161,6 +161,13 @@ async function handlePaymentSucceeded(data) {
 
     console.log(`Successfully added ${creditsToAdd} credits to user ${userId}`);
 
+    // Emit real-time update via Socket.IO
+    const newCredits = (user.credits || 0) + creditsToAdd;
+    const io = res?.socket?.server?.io;
+    if (io) {
+      io.to(`user:${userId}`).emit('user:update', { credits: newCredits });
+    }
+
   } catch (error) {
     console.error('Error handling payment.succeeded:', error);
   }
@@ -188,6 +195,6 @@ async function handlePaymentFailed(data) {
 }
 
 // Handle transaction completed (one-time purchase)
-async function handleTransactionCompleted(data) {
-  return await handlePaymentSucceeded(data);
+async function handleTransactionCompleted(data, res) {
+  return await handlePaymentSucceeded(data, res);
 }
