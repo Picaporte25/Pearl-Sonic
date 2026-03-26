@@ -45,20 +45,17 @@ export function verifyPaddleWebhookSignature(body, signature, secret) {
       return false;
     }
 
-    // Calculate HMAC-SHA256 of the body with the secret
+    // Paddle v2 signs: "timestamp:raw_body"
+    const signedPayload = `${timestamp}:${body}`;
     const hmac = crypto
       .createHmac('sha256', secret)
-      .update(body, 'utf8')
+      .update(signedPayload)
       .digest('hex');
 
-    // Compare the calculated hash with the received hash
-    // Use constant-time comparison to prevent timing attacks
-    const expectedHash = `sha256=${hmac}`;
-    const receivedHash = `sha256=${hash}`;
-
+    // Constant-time comparison to prevent timing attacks
     return crypto.timingSafeEqual(
-      Buffer.from(expectedHash),
-      Buffer.from(receivedHash)
+      Buffer.from(hmac),
+      Buffer.from(hash)
     );
   } catch (error) {
     console.error('Error verifying webhook signature:', error);
