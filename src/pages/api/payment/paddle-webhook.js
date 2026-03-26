@@ -25,9 +25,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Capture socket.io reference BEFORE sending response
-  const io = res?.socket?.server?.io;
-
   try {
     const rawBody = await getRawBody(req);
 
@@ -62,7 +59,7 @@ export default async function handler(req, res) {
     // Process AFTER responding
     switch (event_type) {
       case 'transaction.completed':
-        await handleTransactionCompleted(data, io);
+        await handleTransactionCompleted(data);
         break;
 
       case 'transaction.payment_failed':
@@ -81,7 +78,7 @@ export default async function handler(req, res) {
   }
 }
 
-async function handleTransactionCompleted(data, io) {
+async function handleTransactionCompleted(data) {
   const { custom_data, items, id: transactionId } = data;
 
   if (!custom_data?.userId) {
@@ -127,7 +124,7 @@ async function handleTransactionCompleted(data, io) {
     return;
   }
 
-  // --- Update credits ---
+  // --- Update credits (Supabase Realtime will notify the client automatically) ---
   const { data: user, error: fetchError } = await supabaseAdmin
     .from('users')
     .select('credits')
@@ -152,13 +149,6 @@ async function handleTransactionCompleted(data, io) {
   }
 
   console.log(`[webhook] Added ${creditsToAdd} credits to user ${userId}, total: ${newCredits}`);
-
-  // --- Emit real-time update ---
-  if (io) {
-    const room = `user:${userId}`;
-    io.to(room).emit('user:update', { credits: newCredits });
-    console.log(`[webhook] Emitted user:update to ${room}`);
-  }
 }
 
 async function handlePaymentFailed(data) {
