@@ -13,46 +13,46 @@ export const PADDLE_CONFIG = {
   },
 };
 
-// One-time purchase plans (USD) - Single payment plans
+// One-time purchase plans (USD) - 1 credit = 1 second of audio
 export const PADDLE_PRICES_ONETIME = [
   {
-    id: process.env.NEXT_PUBLIC_PADDLE_PRICE_STARTER || 'pri_01hj...', // Replace with actual Paddle Price ID
+    id: process.env.NEXT_PUBLIC_PADDLE_PRICE_STARTER || 'pri_01hj...',
     name: 'Starter',
-    credits: 1,
+    credits: 120,
     price: 5,
     currency: 'USD',
     billing: 'one-time',
-    description: '1 song (2 minutes of music)',
+    description: '2 minutes of music',
     features: ['2 minutes of music', 'Full commercial rights', 'High quality audio'],
   },
   {
-    id: process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO || 'pri_02k...', // Replace with actual Paddle Price ID
+    id: process.env.NEXT_PUBLIC_PADDLE_PRICE_PRO || 'pri_02k...',
     name: 'Pro',
-    credits: 3,
+    credits: 360,
     price: 15,
     currency: 'USD',
     billing: 'one-time',
-    description: '3 songs (6 minutes of music)',
+    description: '6 minutes of music',
     features: ['6 minutes of music', 'Full commercial rights', 'High quality audio'],
   },
   {
-    id: process.env.NEXT_PUBLIC_PADDLE_PRICE_CREATOR || 'pri_03l...', // Replace with actual Paddle Price ID
+    id: process.env.NEXT_PUBLIC_PADDLE_PRICE_CREATOR || 'pri_03l...',
     name: 'Creator',
-    credits: 5,
+    credits: 600,
     price: 25,
     currency: 'USD',
     billing: 'one-time',
-    description: '5 songs (10 minutes of music)',
+    description: '10 minutes of music',
     features: ['10 minutes of music', 'Full commercial rights', 'High quality audio'],
   },
   {
-    id: process.env.NEXT_PUBLIC_PADDLE_PRICE_STUDIO || 'pri_04m...', // Replace with actual Paddle Price ID
+    id: process.env.NEXT_PUBLIC_PADDLE_PRICE_STUDIO || 'pri_04m...',
     name: 'Studio',
-    credits: 10,
+    credits: 1200,
     price: 50,
     currency: 'USD',
     billing: 'one-time',
-    description: '10 songs (20 minutes of music)',
+    description: '20 minutes of music',
     features: ['20 minutes of music', 'Full commercial rights', 'High quality audio'],
   },
 ];

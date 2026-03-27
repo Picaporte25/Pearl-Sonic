@@ -2,7 +2,6 @@ import { supabaseAdmin } from '@/lib/db';
 import { verifyToken, getTokenFromCookies } from '@/lib/auth';
 import falClient from '@/lib/fal';
 
-const CREDITS_PER_TRACK = 1; // Credits needed per song
 const DEFAULT_DURATION = 120000; // Default: 2 minutes in milliseconds
 
 export default async function handler(req, res) {
@@ -41,17 +40,19 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    // Calculate credits needed: 1 credit = 1 second
+    const finalDuration = duration || DEFAULT_DURATION;
+    const durationSeconds = Math.ceil(finalDuration / 1000);
+    const creditsNeeded = durationSeconds;
+
     // Check credits
-    if (user.credits < CREDITS_PER_TRACK) {
+    if (user.credits < creditsNeeded) {
       return res.status(402).json({
         error: 'Not enough credits',
-        required: CREDITS_PER_TRACK,
+        required: creditsNeeded,
         available: user.credits,
       });
     }
-
-    // Generate music with Elevenlabs Music via fal.ai
-    const finalDuration = duration || DEFAULT_DURATION;
     const falResult = await falClient.generate({
       prompt,
       duration: finalDuration,
@@ -66,7 +67,7 @@ export default async function handler(req, res) {
     // Deduct credits
     const { error: updateError } = await supabaseAdmin
       .from('users')
-      .update({ credits: user.credits - CREDITS_PER_TRACK })
+      .update({ credits: user.credits - creditsNeeded })
       .eq('id', userId);
 
     if (updateError) {
@@ -90,7 +91,7 @@ export default async function handler(req, res) {
         description: prompt,
         duration: finalDuration,
         status: 'generating',
-        credits_used: CREDITS_PER_TRACK
+        credits_used: creditsNeeded
       }])
       .select()
       .single();
@@ -105,7 +106,7 @@ export default async function handler(req, res) {
       .from('credit_transactions')
       .insert([{
         user_id: userId,
-        amount: -CREDITS_PER_TRACK,
+        amount: -creditsNeeded,
         type: 'usage',
         description: `Track generation: ${prompt.substring(0, 50)}...`,
         track_id: track.id
@@ -121,8 +122,8 @@ export default async function handler(req, res) {
       trackId: track.id,
       jobId: falResult.requestId,
       estimatedTime: falResult.estimatedTime,
-      creditsUsed: CREDITS_PER_TRACK,
-      remainingCredits: user.credits - CREDITS_PER_TRACK,
+      creditsUsed: creditsNeeded,
+      remainingCredits: user.credits - creditsNeeded,
     });
   } catch (error) {
     console.error('Error in generate:', error);

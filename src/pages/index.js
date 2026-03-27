@@ -256,90 +256,29 @@ export default function Home({ user, credits }) {
           </p>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Package 1 */}
-            <div className="card text-center">
-              <h3 className="text-lg font-semibold text-gray-400 mb-2">Starter</h3>
-              <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">2</div>
-              <p className="text-gray-500 mb-6">minutes of music</p>
-              <div className="text-2xl font-medium text-white mb-6">$5</div>
-              {user ? (
-                <Link href="/checkout-paddle">
-                  <button className="btn-outline w-full">
+            {[
+              { name: 'Starter', credits: 120, price: 5, popular: false },
+              { name: 'Pro', credits: 360, price: 15, popular: true },
+              { name: 'Creator', credits: 600, price: 25, popular: false },
+              { name: 'Studio', credits: 1200, price: 50, popular: false },
+            ].map((plan) => (
+              <div key={plan.name} className={`card text-center ${plan.popular ? 'border-purple-500 border-2' : ''}`}>
+                {plan.popular && (
+                  <div className="text-purple-500 text-sm font-semibold mb-2">Most popular</div>
+                )}
+                <h3 className="text-lg font-semibold text-gray-400 mb-2">{plan.name}</h3>
+                <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">
+                  {plan.credits}
+                </div>
+                <p className="text-gray-500 mb-6">credits ({Math.floor(plan.credits / 60)}m of audio)</p>
+                <div className="text-2xl font-medium text-white mb-6">${plan.price}</div>
+                <Link href={user ? '/checkout-paddle' : '/login'}>
+                  <button className={`${plan.popular ? 'btn-primary' : 'btn-outline'} w-full`}>
                     Buy
                   </button>
                 </Link>
-              ) : (
-                <Link href="/login">
-                  <button className="btn-outline w-full">
-                    Buy
-                  </button>
-                </Link>
-              )}
-            </div>
-
-            {/* Package 2 */}
-            <div className="card text-center border-purple-500 border-2">
-              <div className="text-purple-500 text-sm font-semibold mb-2">Most popular</div>
-              <h3 className="text-lg font-semibold text-gray-400 mb-2">Pro</h3>
-              <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">6</div>
-              <p className="text-gray-500 mb-6">minutes of music</p>
-              <div className="text-2xl font-medium text-white mb-6">$15</div>
-              {user ? (
-                <Link href="/checkout-paddle">
-                  <button className="btn-primary w-full">
-                    Buy
-                  </button>
-                </Link>
-              ) : (
-                <Link href="/login">
-                  <button className="btn-primary w-full">
-                    Buy
-                  </button>
-                </Link>
-              )}
-            </div>
-
-            {/* Package 3 */}
-            <div className="card text-center">
-              <h3 className="text-lg font-semibold text-gray-400 mb-2">Creator</h3>
-              <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">10</div>
-              <p className="text-gray-500 mb-6">minutes of music</p>
-              <div className="text-2xl font-medium text-white mb-6">$25</div>
-              {user ? (
-                <Link href="/checkout-paddle">
-                  <button className="btn-outline w-full">
-                    Buy
-                  </button>
-                </Link>
-              ) : (
-                <Link href="/login">
-                  <button className="btn-outline w-full">
-                    Buy
-                  </button>
-                </Link>
-              )}
-            </div>
-
-            {/* Package 4 */}
-            <div className="card text-center">
-              <h3 className="text-lg font-semibold text-gray-400 mb-2">Studio</h3>
-              <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">20</div>
-              <p className="text-gray-500 mb-6">minutes of music</p>
-              <div className="text-2xl font-medium text-white mb-6">$50</div>
-              {user ? (
-                <Link href="/checkout-paddle">
-                  <button className="btn-outline w-full">
-                    Buy
-                  </button>
-                </Link>
-              ) : (
-                <Link href="/login">
-                  <button className="btn-outline w-full">
-                    Buy
-                  </button>
-                </Link>
-              )}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

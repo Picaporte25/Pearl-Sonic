@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
 import { getUserFromToken } from '@/lib/auth';
 import { PADDLE_PRICES_ONETIME, formatPrice } from '@/lib/paddle';
+import { useUser } from '@/contexts/UserContext';
 
 export async function getServerSideProps(context) {
   const user = await getUserFromToken(context);
@@ -26,8 +27,9 @@ export async function getServerSideProps(context) {
 
 export default function PaddleCheckoutPage({ user: serverUser, credits: serverCredits }) {
   const router = useRouter();
-  const [user] = useState(serverUser);
-  const [credits] = useState(serverCredits);
+  const { user: contextUser } = useUser();
+  const user = contextUser || serverUser;
+  const credits = contextUser?.credits ?? serverCredits;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -103,7 +105,7 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
             Generate AI music at affordable prices. Create songs of any duration you want.
           </p>
           <p className="text-gray-500">
-            Available credits: <span className="text-white font-semibold">{credits}</span>
+            Available: <span className="text-white font-semibold">{credits >= 60 ? `${Math.floor(credits / 60)}m ${credits % 60}s` : `${credits}s`}</span> of generation
           </p>
         </div>
 
@@ -124,13 +126,12 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
               )}
               <h3 className="text-lg font-semibold text-gray-400 mb-2">{plan.name}</h3>
               <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">
-                {plan.credits * 2}
+                {plan.credits}
               </div>
-              <p className="text-gray-500 mb-6">minutes of music</p>
+              <p className="text-gray-500 mb-6">credits ({Math.floor(plan.credits / 60)}m of audio)</p>
               <div className="text-2xl font-medium text-white mb-6">
                 {formatPrice(plan.price)}
               </div>
-              <p className="text-sm text-gray-600 mb-6">{plan.credits * 2} minutes of music</p>
 
               <button
                 onClick={() => handleSubscribe(plan.id)}

@@ -99,7 +99,9 @@ async function handleTransactionCompleted(data) {
 
   // --- Calculate credits ---
   const priceId = items?.[0]?.price?.id;
+  console.log(`[webhook] priceId from Paddle: ${priceId}`);
   const creditsToAdd = getCreditsFromPriceId(priceId);
+  console.log(`[webhook] creditsToAdd resolved: ${creditsToAdd}`);
 
   if (creditsToAdd === 0) {
     console.error(`[webhook] Unknown priceId: ${priceId}, no credits added`);
