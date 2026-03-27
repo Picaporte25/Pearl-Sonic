@@ -53,10 +53,7 @@ export default async function handler(req, res) {
 
     console.log('[webhook] received:', event_type, data.id);
 
-    // Respond 200 IMMEDIATELY so Paddle doesn't retry
-    res.status(200).json({ received: true });
-
-    // Process AFTER responding
+    // Process BEFORE responding so Supabase calls don't get killed
     switch (event_type) {
       case 'transaction.completed':
         await handleTransactionCompleted(data);
@@ -70,11 +67,11 @@ export default async function handler(req, res) {
         console.log(`[webhook] ignored event: ${event_type}`);
     }
 
+    return res.status(200).json({ received: true });
+
   } catch (error) {
     console.error('Paddle webhook error:', error);
-    if (!res.headersSent) {
-      res.status(200).json({ received: true });
-    }
+    return res.status(200).json({ received: true, error: 'Processing error' });
   }
 }
 
@@ -124,7 +121,7 @@ async function handleTransactionCompleted(data) {
     return;
   }
 
-  // --- Update credits (Supabase Realtime will notify the client automatically) ---
+  // --- Update credits ---
   const { data: user, error: fetchError } = await supabaseAdmin
     .from('users')
     .select('credits')
@@ -151,19 +148,27 @@ async function handleTransactionCompleted(data) {
   console.log(`[webhook] Added ${creditsToAdd} credits to user ${userId}, total: ${newCredits}`);
 
   // --- Broadcast update via Supabase Realtime ---
-  const channel = supabaseAdmin.channel(`user-credits:${userId}`);
-  await new Promise((resolve) => {
-    channel.subscribe((status) => {
-      if (status === 'SUBSCRIBED') resolve();
+  try {
+    const channel = supabaseAdmin.channel(`user-credits:${userId}`);
+    await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(new Error('Broadcast subscribe timeout')), 5000);
+      channel.subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          clearTimeout(timeout);
+          resolve();
+        }
+      });
     });
-  });
-  await channel.send({
-    type: 'broadcast',
-    event: 'credits_updated',
-    payload: { credits: newCredits },
-  });
-  await supabaseAdmin.removeChannel(channel);
-  console.log(`[webhook] Broadcast sent to user-credits:${userId}`);
+    await channel.send({
+      type: 'broadcast',
+      event: 'credits_updated',
+      payload: { credits: newCredits },
+    });
+    await supabaseAdmin.removeChannel(channel);
+    console.log(`[webhook] Broadcast sent to user-credits:${userId}`);
+  } catch (err) {
+    console.error('[webhook] Broadcast failed (credits still saved):', err.message);
+  }
 }
 
 async function handlePaymentFailed(data) {
