@@ -1,5 +1,5 @@
 import { useContext, createContext, useReducer, useEffect, useMemo, useCallback } from 'react';
-import { supabase } from '@/lib/db';
+import { supabase } from '@/lib/supabase-client';
 
 const USER_ACTIONS = {
   SET_USER: 'SET_USER',
@@ -75,30 +75,21 @@ function useProvideUser() {
     dispatch({ type: USER_ACTIONS.UPDATE_USER, payload: data });
   }, []);
 
-  // Supabase Realtime: listen for changes on the user's row
+  // Supabase Broadcast: listen for credit updates (no RLS needed)
   useEffect(() => {
     if (!state.data?.id) return;
 
     const channel = supabase
-      .channel(`user:${state.data.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'users',
-          filter: `id=eq.${state.data.id}`,
-        },
-        (payload) => {
-          console.log('[realtime] user updated:', payload.new);
-          dispatch({
-            type: USER_ACTIONS.UPDATE_USER,
-            payload: { credits: payload.new.credits },
-          });
-        }
-      )
+      .channel(`user-credits:${state.data.id}`)
+      .on('broadcast', { event: 'credits_updated' }, (payload) => {
+        console.log('[realtime] credits updated:', payload.payload);
+        dispatch({
+          type: USER_ACTIONS.UPDATE_USER,
+          payload: payload.payload,
+        });
+      })
       .subscribe((status) => {
-        console.log('[realtime] subscription status:', status);
+        console.log('[realtime] broadcast subscription:', status);
       });
 
     return () => {

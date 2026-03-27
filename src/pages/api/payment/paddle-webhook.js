@@ -149,6 +149,21 @@ async function handleTransactionCompleted(data) {
   }
 
   console.log(`[webhook] Added ${creditsToAdd} credits to user ${userId}, total: ${newCredits}`);
+
+  // --- Broadcast update via Supabase Realtime ---
+  const channel = supabaseAdmin.channel(`user-credits:${userId}`);
+  await new Promise((resolve) => {
+    channel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') resolve();
+    });
+  });
+  await channel.send({
+    type: 'broadcast',
+    event: 'credits_updated',
+    payload: { credits: newCredits },
+  });
+  await supabaseAdmin.removeChannel(channel);
+  console.log(`[webhook] Broadcast sent to user-credits:${userId}`);
 }
 
 async function handlePaymentFailed(data) {
