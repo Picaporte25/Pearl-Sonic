@@ -59,7 +59,14 @@ export default async function handler(req, res) {
     }
 
     // Poll Fal.ai for status
+    console.log('🔍 Checking FAL.ai status for request:', track.fal_request_id);
     const falResult = await falClient.getStatus(track.fal_request_id);
+
+    console.log('📡 FAL.ai response:', {
+      trackId: track.id,
+      falRequestId: track.fal_request_id,
+      falResult: JSON.stringify(falResult, null, 2)
+    });
 
     if (!falResult.success) {
       console.error('❌ FAL.ai status check failed:', falResult.error);
@@ -75,7 +82,8 @@ export default async function handler(req, res) {
       trackId: track.id,
       falRequestId: track.fal_request_id,
       falStatus: falResult.status,
-      falProgress: falResult.progress
+      falProgress: falResult.progress,
+      audioUrl: falResult.audioUrl
     });
 
     // Update track based on Fal result
@@ -95,22 +103,32 @@ export default async function handler(req, res) {
 
     // Only update if there are changes
     if (Object.keys(updateData).length > 0) {
+      console.log('🔄 Updating track in Supabase:', {
+        trackId,
+        updateData: JSON.stringify(updateData, null, 2)
+      });
+
       const { error: updateError } = await supabaseAdmin
         .from('tracks')
         .update(updateData)
         .eq('id', trackId);
 
       if (updateError) {
-        console.error('Error updating track:', updateData, updateError);
+        console.error('❌ Error updating track:', updateData, updateError);
+      } else {
+        console.log('✅ Track updated successfully in Supabase');
       }
     }
 
-    res.status(200).json({
+    const responseData = {
       status: updateData.status || track.status,
       audioUrl: updateData.audio_url || track.audio_url,
       title: updateData.title || track.title,
       progress: updateData.progress !== undefined ? updateData.progress : track.progress,
-    });
+    };
+
+    console.log('📤 Sending response to client:', JSON.stringify(responseData, null, 2));
+    res.status(200).json(responseData);
   } catch (error) {
     console.error('Error in status:', error);
     res.status(500).json({ error: 'Internal server error' });

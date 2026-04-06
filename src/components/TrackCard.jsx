@@ -7,6 +7,17 @@ export default function TrackCard({ track }) {
   const [isPolling, setIsPolling] = useState(false);
   const pollIntervalRef = useRef(null);
 
+  // Log when track prop changes
+  useEffect(() => {
+    console.log('🔄 Track prop updated:', {
+      trackId: track.id,
+      status: track.status,
+      audioUrl: track.audioUrl,
+      falRequestId: track.fal_request_id
+    });
+    setLocalTrack(track);
+  }, [track]);
+
   const handleTouchStart = (e) => {
     e.stopPropagation();
   };
@@ -18,20 +29,29 @@ export default function TrackCard({ track }) {
 
   // Poll for status updates if track is generating
   useEffect(() => {
+    console.log('🎵 TrackCard mounted:', {
+      trackId: track.id,
+      initialStatus: track.status,
+      hasAudioUrl: !!track.audioUrl,
+      hasFalRequestId: !!track.falRequestId
+    });
+
     if (track.status === 'generating' && !isPolling) {
+      console.log('🚀 Starting polling for generating track');
       setIsPolling(true);
       pollForUpdates();
     }
 
     return () => {
       if (pollIntervalRef.current) {
+        console.log('🛑 Cleaning up polling interval');
         clearInterval(pollIntervalRef.current);
       }
     };
   }, [track.status, track.id]); // Only re-run when track status or ID changes
 
   const pollForUpdates = async () => {
-    console.log('🔄 Starting polling for track:', track.id);
+    console.log('🔄 Starting polling for track:', track.id, 'Current status:', track.status);
     try {
       // Clear any existing interval
       if (pollIntervalRef.current) {
@@ -41,23 +61,38 @@ export default function TrackCard({ track }) {
       // Poll every 3 seconds
       pollIntervalRef.current = setInterval(async () => {
         try {
+          console.log('📡 Polling FAL.ai status for track:', track.id);
           const response = await fetch(`/api/music/status?trackId=${track.id}`);
           const data = await response.json();
 
-          console.log('📊 Polling result:', {
+          console.log('📊 Polling response:', {
             trackId: track.id,
-            success: data.success,
-            trackStatus: data.track?.status,
-            trackProgress: data.track?.progress
+            status: data.status,
+            audioUrl: data.audioUrl,
+            progress: data.progress,
+            title: data.title
           });
 
-          if (data.success && data.track) {
-            // Update local track state
-            setLocalTrack(data.track);
+          if (data.status) {
+            // Update local track state with the new data
+            console.log('🔄 Updating local track state:', {
+              oldStatus: localTrack.status,
+              newStatus: data.status,
+              oldAudioUrl: localTrack.audioUrl,
+              newAudioUrl: data.audioUrl
+            });
+
+            setLocalTrack(prevTrack => ({
+              ...prevTrack,
+              status: data.status,
+              audioUrl: data.audioUrl,
+              progress: data.progress,
+              title: data.title || prevTrack.title
+            }));
 
             // Stop polling if completed or failed
-            if (data.track.status === 'completed' || data.track.status === 'failed') {
-              console.log('✅ Polling stopped - Track status:', data.track.status);
+            if (data.status === 'completed' || data.status === 'failed') {
+              console.log('✅ Polling stopped - Track status:', data.status);
               setIsPolling(false);
               if (pollIntervalRef.current) {
                 clearInterval(pollIntervalRef.current);
@@ -83,7 +118,7 @@ export default function TrackCard({ track }) {
         {localTrack.coverUrl ? (
           <img src={localTrack.coverUrl} alt={localTrack.title} className="w-full h-full object-cover" />
         ) : (
-          <svg className="w-16 h-16 text-gray-600" fill="url(#gradient-card)" viewBox="0 0 24 24">
+          <svg className="w-16 h-16 text-gray-600" viewBox="0 0 24 24">
             <defs>
               <linearGradient id="gradient-card" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#8B5CF6" />
@@ -91,7 +126,7 @@ export default function TrackCard({ track }) {
                 <stop offset="100%" stopColor="#06B6D4" />
               </linearGradient>
             </defs>
-            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 1.79 4 4-4 1.79 4 4V7h4V3h-6z"/>
+            <path fill="url(#gradient-card)" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
           </svg>
         )}
 

@@ -44,6 +44,7 @@ export default async function handler(req, res) {
       id: track.id,
       userId: track.user_id,
       sunoId: track.suno_id,
+      falRequestId: track.fal_request_id,
       title: track.title,
       description: track.description,
       genre: track.genre,
