@@ -1,6 +1,7 @@
 import { supabaseAdmin } from '@/lib/db';
 import { hashPassword, generateToken } from '@/lib/auth';
 import { rateLimit } from '@/lib/rate-limit';
+import { validatePassword } from '@/lib/password-validation';
 
 // Apply rate limiting to register endpoint (5 attempts per 15 minutes)
 const rateLimitMiddleware = rateLimit('auth');
@@ -38,12 +39,13 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid email' });
   }
 
-  // Validate password length (min 6, max 128)
-  if (password.length < 6) {
-    return res.status(400).json({ error: 'Password must be at least 6 characters' });
-  }
-  if (password.length > 128) {
-    return res.status(400).json({ error: 'Password is too long' });
+  // Validate password with enhanced security requirements
+  const passwordValidation = validatePassword(password);
+  if (!passwordValidation.isValid) {
+    return res.status(400).json({
+      error: passwordValidation.error,
+      field: 'password'
+    });
   }
 
   // Validate email length

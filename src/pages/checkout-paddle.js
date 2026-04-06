@@ -40,7 +40,7 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
           process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === 'sandbox' ? 'sandbox' : 'production'
         );
         window.Paddle.Initialize({
-          token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
+          token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN || process.env.NEXT_PUBLIC_PADDLE_TOKEN,
         });
         window.__paddleInitialized = true;
         clearInterval(interval);

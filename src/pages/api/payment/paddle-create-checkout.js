@@ -11,8 +11,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const apiKey = process.env.PADDLE_API_KEY;
-    if (!apiKey || apiKey === 'your-paddle-api-key-here') {
+    const apiKey = process.env.PADDLE_API_KEY || process.env.PADDLE_TOKEN;
+    if (!apiKey || apiKey === 'your_paddle_api_token_here' || apiKey === 'your-paddle-api-key-here') {
       return res.status(500).json({
         error: 'Paddle not configured. Please set up your Paddle API key.',
       });

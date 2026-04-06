@@ -38,6 +38,14 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid email' });
   }
 
+  // Validate password length to prevent DoS attacks
+  if (password.length < 1) {
+    return res.status(400).json({ error: 'Password is required' });
+  }
+  if (password.length > 128) {
+    return res.status(400).json({ error: 'Password is too long' });
+  }
+
   // Add delay to prevent timing attacks (brute force detection)
   // The more failures, the longer the delay
   await new Promise(resolve => setTimeout(resolve, 200));

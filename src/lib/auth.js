@@ -2,7 +2,15 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { supabaseAdmin } from './db';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tu_jwt_secret_development';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// Validar que JWT_SECRET esté configurado en producción
+if (!JWT_SECRET) {
+  console.error('JWT_SECRET no está configurado. Por favor configura esta variable de entorno.');
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET es obligatorio en producción');
+  }
+}
 
 // Generar token JWT
 export function generateToken(userId) {
