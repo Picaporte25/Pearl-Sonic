@@ -55,21 +55,18 @@ class FalClient {
    */
   async getStatus(requestId) {
     try {
-      const response = await this.client.get(`/${FAL_MODEL}/requests/${requestId}/status`);
+      // FAL.ai status endpoint format: /{model_name}/requests/{request_id}
+      const response = await this.client.get(`/${FAL_MODEL}/requests/${requestId}`);
 
       const data = response.data;
 
       if (data.status === 'COMPLETED') {
-        // Obtener el resultado completo
-        const resultResponse = await this.client.get(`/${FAL_MODEL}/requests/${requestId}`);
-        const result = resultResponse.data;
-
         return {
           success: true,
           status: 'completed',
           progress: 100,
-          audioUrl: result.audio?.url,
-          title: result.audio?.file_name?.replace('.mp3', '') || 'Generated Track',
+          audioUrl: data.audio?.url,
+          title: data.audio?.file_name?.replace('.mp3', '') || 'Generated Track',
         };
       } else if (data.status === 'FAILED') {
         return {

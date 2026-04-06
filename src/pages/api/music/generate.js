@@ -97,9 +97,15 @@ export default async function handler(req, res) {
       .single();
 
     if (trackError) {
-      console.error('Error creating track:', trackError);
+      console.error('❌ Error creating track in Supabase:', trackError);
       return res.status(500).json({ error: 'Error creating track' });
     }
+
+    console.log('✅ Track created in Supabase:', {
+      trackId: track.id,
+      falRequestId: falResult.requestId,
+      status: 'generating'
+    });
 
     // Create credit transaction
     const { error: transError } = await supabaseAdmin

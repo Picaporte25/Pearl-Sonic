@@ -31,6 +31,7 @@ export default function TrackCard({ track }) {
   }, [track.status, track.id]); // Only re-run when track status or ID changes
 
   const pollForUpdates = async () => {
+    console.log('🔄 Starting polling for track:', track.id);
     try {
       // Clear any existing interval
       if (pollIntervalRef.current) {
@@ -43,12 +44,20 @@ export default function TrackCard({ track }) {
           const response = await fetch(`/api/music/status?trackId=${track.id}`);
           const data = await response.json();
 
+          console.log('📊 Polling result:', {
+            trackId: track.id,
+            success: data.success,
+            trackStatus: data.track?.status,
+            trackProgress: data.track?.progress
+          });
+
           if (data.success && data.track) {
             // Update local track state
             setLocalTrack(data.track);
 
             // Stop polling if completed or failed
             if (data.track.status === 'completed' || data.track.status === 'failed') {
+              console.log('✅ Polling stopped - Track status:', data.track.status);
               setIsPolling(false);
               if (pollIntervalRef.current) {
                 clearInterval(pollIntervalRef.current);
@@ -57,13 +66,13 @@ export default function TrackCard({ track }) {
             }
           }
         } catch (error) {
-          console.error('Error polling for status:', error);
+          console.error('❌ Error polling for status:', error);
           // Don't stop polling on network errors, just log them
         }
       }, 3000); // Poll every 3 seconds
 
     } catch (error) {
-      console.error('Error starting polling:', error);
+      console.error('❌ Error starting polling:', error);
     }
   };
 

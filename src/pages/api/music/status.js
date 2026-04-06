@@ -62,7 +62,7 @@ export default async function handler(req, res) {
     const falResult = await falClient.getStatus(track.fal_request_id);
 
     if (!falResult.success) {
-      console.error('Fal error:', falResult.error);
+      console.error('❌ FAL.ai status check failed:', falResult.error);
       return res.status(200).json({
         status: track.status,
         audioUrl: track.audio_url,
@@ -70,6 +70,13 @@ export default async function handler(req, res) {
         progress: 0,
       });
     }
+
+    console.log('📊 FAL.ai status check:', {
+      trackId: track.id,
+      falRequestId: track.fal_request_id,
+      falStatus: falResult.status,
+      falProgress: falResult.progress
+    });
 
     // Update track based on Fal result
     const updateData = {};
