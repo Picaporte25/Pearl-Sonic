@@ -1,58 +1,58 @@
 /**
- * Validación de contraseñas para mayor seguridad
+ * Password Validation for Enhanced Security
  */
 
 /**
- * Valida que una contraseña cumpla con los requisitos de seguridad
- * @param {string} password - Contraseña a validar
+ * Validates that a password meets security requirements
+ * @param {string} password - Password to validate
  * @returns {object} - { isValid: boolean, error: string | null }
  */
 export function validatePassword(password) {
   const errors = [];
 
-  // Longitud mínima de 8 caracteres
+  // Minimum length of 8 characters
   if (password.length < 8) {
-    errors.push('La contraseña debe tener al menos 8 caracteres');
+    errors.push('Password must be at least 8 characters');
   }
 
-  // Longitud máxima de 128 caracteres
+  // Maximum length of 128 characters
   if (password.length > 128) {
-    errors.push('La contraseña es demasiado larga');
+    errors.push('Password is too long');
   }
 
-  // Debe contener al menos una letra mayúscula
+  // Must contain at least one uppercase letter
   if (!/[A-Z]/.test(password)) {
-    errors.push('La contraseña debe contener al menos una letra mayúscula');
+    errors.push('Password must contain at least one uppercase letter');
   }
 
-  // Debe contener al menos una letra minúscula
+  // Must contain at least one lowercase letter
   if (!/[a-z]/.test(password)) {
-    errors.push('La contraseña debe contener al menos una letra minúscula');
+    errors.push('Password must contain at least one lowercase letter');
   }
 
-  // Debe contener al menos un número
+  // Must contain at least one number
   if (!/[0-9]/.test(password)) {
-    errors.push('La contraseña debe contener al menos un número');
+    errors.push('Password must contain at least one number');
   }
 
-  // Debe contener al menos un carácter especial
+  // Must contain at least one special character
   if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-    errors.push('La contraseña debe contener al menos un carácter especial (!@#$%^&*()_+-=[]{};:\'"\\|,.<>\/?)');
+    errors.push('Password must contain at least one special character (!@#$%^&*()_+-=[]{};:\'"\\|,.<>\/?)');
   }
 
-  // Verificar que no contenga espacios
+  // Verify that it doesn't contain spaces
   if (/\s/.test(password)) {
-    errors.push('La contraseña no debe contener espacios');
+    errors.push('Password must not contain spaces');
   }
 
-  // Verificar que no sea una contraseña común débil
+  // Verify that it's not a common weak password
   const commonPasswords = [
     'password', 'Password123', '12345678', 'qwerty123', 'admin123',
     'letmein', 'welcome', 'monkey', 'dragon', 'football'
   ];
 
   if (commonPasswords.includes(password.toLowerCase())) {
-    errors.push('La contraseña es demasiado común. Por favor elige una más segura.');
+    errors.push('Password is too common. Please choose a more secure one.');
   }
 
   return {
@@ -63,40 +63,40 @@ export function validatePassword(password) {
 }
 
 /**
- * Calcula la fortaleza de una contraseña
- * @param {string} password - Contraseña a evaluar
+ * Calculates password strength
+ * @param {string} password - Password to evaluate
  * @returns {object} - { score: number, label: string }
  */
 export function getPasswordStrength(password) {
   let score = 0;
 
-  // Longitud base
+  // Base length
   if (password.length >= 8) score += 1;
   if (password.length >= 12) score += 1;
   if (password.length >= 16) score += 1;
 
-  // Complejidad de caracteres
+  // Character complexity
   if (/[A-Z]/.test(password)) score += 1;
   if (/[a-z]/.test(password)) score += 1;
   if (/[0-9]/.test(password)) score += 1;
   if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) score += 1;
 
-  // Máximo puntaje es 8
+  // Maximum score is 8
   score = Math.min(score, 8);
 
-  let label = 'Muy débil';
-  if (score >= 2) label = 'Débil';
-  if (score >= 4) label = 'Media';
-  if (score >= 6) label = 'Fuerte';
-  if (score >= 7) label = 'Muy fuerte';
+  let label = 'Very weak';
+  if (score >= 2) label = 'Weak';
+  if (score >= 4) label = 'Medium';
+  if (score >= 6) label = 'Strong';
+  if (score >= 7) label = 'Very strong';
 
   return { score, label };
 }
 
 /**
- * Genera sugerencias para mejorar la contraseña
- * @param {string} password - Contraseña actual
- * @returns {string[]} - Array de sugerencias
+ * Generates suggestions to improve password
+ * @param {string} password - Current password
+ * @returns {string[]} - Array of suggestions
  */
 export function getPasswordSuggestions(password) {
   const suggestions = [];
@@ -106,13 +106,13 @@ export function getPasswordSuggestions(password) {
     suggestions.push(...validation.errors);
   }
 
-  // Sugerencias adicionales para contraseñas ya válidas pero mejorables
+  // Additional suggestions for already valid but improvable passwords
   if (password.length >= 8 && password.length < 12) {
-    suggestions.push('Considera usar una contraseña más larga (12+ caracteres) para mayor seguridad');
+    suggestions.push('Consider using a longer password (12+ characters) for better security');
   }
 
   if (validation.isValid && getPasswordStrength(password).score < 7) {
-    suggestions.push('Considera agregar más variedad de caracteres para mayor seguridad');
+    suggestions.push('Consider adding more character variety for better security');
   }
 
   return suggestions;
