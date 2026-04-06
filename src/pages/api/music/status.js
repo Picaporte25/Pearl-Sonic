@@ -82,6 +82,7 @@ export default async function handler(req, res) {
     } else if (falResult.status === 'failed') {
       updateData.status = 'failed';
     } else {
+      updateData.status = 'generating';
       updateData.progress = falResult.progress || 0;
     }
 
