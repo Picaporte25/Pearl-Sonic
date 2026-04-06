@@ -50,7 +50,7 @@ export default function RegisterPage() {
       }
 
       // Full page reload to ensure cookie is sent with the next request
-      window.location.href = '/generate';
+      window.location.href = '/';
     } catch (err) {
       setError(err.message);
     } finally {

@@ -80,6 +80,11 @@ export default function Header({ user: userProp = null, credits: creditsProp = 0
             </nav>
           ) : (
             <nav className="flex items-center space-x-4">
+              <Link href="/">
+                <span className="text-white hover:text-gray-300 transition-colors cursor-pointer font-medium">
+                  Home
+                </span>
+              </Link>
               <Link href="/login">
                 <span className="text-gray-400 hover:text-white transition-colors cursor-pointer font-medium">
                   Sign In
