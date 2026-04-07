@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 import { ProvideUser } from "@/contexts/UserContext";
+import { Analytics } from "@vercel/analytics/react";
 
 // Initialize Paddle on app startup
 if (typeof window !== 'undefined') {
@@ -24,6 +25,7 @@ export default function MyApp({ Component, pageProps }) {
   return (
     <ProvideUser>
       <Component {...pageProps} />
+      <Analytics />
     </ProvideUser>
   );
 }
