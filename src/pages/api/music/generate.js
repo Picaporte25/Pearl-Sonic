@@ -64,6 +64,13 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: falResult.error || 'Error generating music' });
     }
 
+    console.log('✅ FAL.ai generation result:', {
+      success: falResult.success,
+      status: falResult.status,
+      hasAudioUrl: !!falResult.audioUrl,
+      requestId: falResult.requestId
+    });
+
     // Deduct credits
     const { error: updateError } = await supabaseAdmin
       .from('users')
@@ -75,11 +82,14 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Error updating credits' });
     }
 
-    // Create title from prompt (first 50 chars or "AI Generated Track")
-    let trackTitle = prompt.length > 50 ? prompt.substring(0, 50) + '...' : prompt;
+    // Create title from FAL.ai result or prompt
+    let trackTitle = falResult.title || (prompt.length > 50 ? prompt.substring(0, 50) + '...' : prompt);
     if (!trackTitle) {
       trackTitle = 'AI Generated Track';
     }
+
+    // FAL.ai is synchronous - track is already completed
+    const trackStatus = falResult.status; // Should be 'completed'
 
     // Create track record
     const { data: track, error: trackError } = await supabaseAdmin
@@ -90,7 +100,9 @@ export default async function handler(req, res) {
         title: trackTitle,
         description: prompt,
         duration: finalDuration,
-        status: 'generating',
+        status: trackStatus,
+        audio_url: falResult.audioUrl, // Audio URL is available immediately
+        progress: falResult.status === 'completed' ? 100 : 0,
         credits_used: creditsNeeded
       }])
       .select()
@@ -104,7 +116,8 @@ export default async function handler(req, res) {
     console.log('✅ Track created in Supabase:', {
       trackId: track.id,
       falRequestId: falResult.requestId,
-      status: 'generating'
+      status: trackStatus,
+      hasAudioUrl: !!falResult.audioUrl
     });
 
     // Create credit transaction
@@ -124,10 +137,11 @@ export default async function handler(req, res) {
     }
 
     res.status(200).json({
-      message: 'Generation started',
+      message: trackStatus === 'completed' ? 'Generation completed' : 'Generation started',
       trackId: track.id,
       jobId: falResult.requestId,
-      estimatedTime: falResult.estimatedTime,
+      status: trackStatus,
+      audioUrl: falResult.audioUrl,
       creditsUsed: creditsNeeded,
       remainingCredits: user.credits - creditsNeeded,
     });
