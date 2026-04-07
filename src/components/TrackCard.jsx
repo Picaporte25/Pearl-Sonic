@@ -5,6 +5,7 @@ export default function TrackCard({ track }) {
   const audioOverlayRef = useRef(null);
   const [localTrack, setLocalTrack] = useState(track);
   const [isPolling, setIsPolling] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const pollIntervalRef = useRef(null);
 
   // Log when track prop changes
@@ -25,6 +26,46 @@ export default function TrackCard({ track }) {
   const handleTouchMove = (e) => {
     e.stopPropagation();
     e.preventDefault();
+  };
+
+  // Robust download function
+  const handleDownload = async (url, title) => {
+    setIsDownloading(true);
+    try {
+      console.log('📥 Starting download:', { url, title });
+
+      // Fetch the audio file
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch audio file');
+
+      // Get blob
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      // Create download link
+      const link = document.createElement('a');
+      const fileName = `${title.replace(/[^a-zA-Z0-9]/g, '_')}.mp3`;
+
+      link.href = blobUrl;
+      link.download = fileName;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+
+      // Trigger download
+      link.click();
+
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+
+      console.log('✅ Download completed:', fileName);
+    } catch (error) {
+      console.error('❌ Download failed:', error);
+      // Fallback to opening in new tab
+      window.open(url, '_blank');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   // Poll for status updates if track is generating
@@ -212,13 +253,13 @@ export default function TrackCard({ track }) {
       <div className="flex gap-2">
         {localTrack.status === 'completed' && localTrack.audioUrl && (
           <>
-            <a
-              href={localTrack.audioUrl}
-              download
-              className="btn-primary text-sm py-2 px-3 flex-1 text-center"
+            <button
+              onClick={() => handleDownload(localTrack.audioUrl, localTrack.title)}
+              disabled={isDownloading}
+              className="btn-primary text-sm py-2 px-3 flex-1 text-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Download
-            </a>
+              {isDownloading ? 'Downloading...' : 'Download'}
+            </button>
           </>
         )}
         {localTrack.status === 'failed' && (
