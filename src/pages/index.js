@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Layout from '@/components/Layout';
 import { getUserFromToken } from '@/lib/auth';
+import SEOHead from '@/components/SEOHead';
 
 export async function getServerSideProps(context) {
   const user = await getUserFromToken(context);
@@ -15,7 +16,14 @@ export async function getServerSideProps(context) {
 
 export default function Home({ user, credits }) {
   return (
-    <Layout title="Pearl-Sonic - Create Music with AI" user={user} credits={credits}>
+    <>
+      <SEOHead
+        title="Pearl-Sonic - Create Music with AI"
+        description="Create original music with AI using Pearl-Sonic. Generate professional royalty-free songs in seconds with artificial intelligence. Perfect for YouTube, podcasts, and commercial use."
+        keywords="AI music generator, create music with AI, artificial intelligence music, free AI music, music generation, AI song creator, royalty free music, Pearl-Sonic, AI music for YouTube, podcast music generator"
+        canonicalUrl="https://pearl-sonic.vercel.app"
+      />
+      <Layout title="Pearl-Sonic - Create Music with AI" user={user} credits={credits}>
       {/* Hero Section */}
       <section className="relative overflow-hidden py-24 sm:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -300,5 +308,6 @@ export default function Home({ user, credits }) {
         </div>
       </section>
     </Layout>
+    </>
   );
 }
