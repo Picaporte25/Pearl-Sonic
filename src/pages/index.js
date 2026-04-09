@@ -53,14 +53,14 @@ export default function Home({ user, credits }) {
                 {user ? (
                   <Link href="/generate">
                     <button className="btn-primary text-lg px-8 py-4">
-                      🎵 Create Your First Song
+                       Create Your First Song
                     </button>
                   </Link>
                 ) : (
                   <>
                     <Link href="/register">
                       <button className="btn-primary text-lg px-8 py-4">
-                        🎵 Start Creating Free
+                         Start Creating Free
                       </button>
                     </Link>
                     <Link href="/generate">
@@ -114,7 +114,7 @@ export default function Home({ user, credits }) {
               </div>
               <div className="mt-4 flex items-center justify-between text-sm">
                 <span className="text-gray-400">⚡ Generated in 12 seconds</span>
-                <span className="text-green-400 font-semibold">✓ 100% Original</span>
+                
               </div>
             </div>
           </div>
