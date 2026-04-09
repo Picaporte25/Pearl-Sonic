@@ -30,7 +30,7 @@ export default function Header({ user: userProp = null, credits: creditsProp = 0
 
           {/* Navigation */}
           {user ? (
-            <nav className="flex items-center space-x-6">
+            <nav className="flex items-center space-x-4">
               <Link href="/">
                 <span className="text-white hover:text-gray-300 transition-colors cursor-pointer font-medium">
                   Home
@@ -89,6 +89,11 @@ export default function Header({ user: userProp = null, credits: creditsProp = 0
                 <span className="text-white hover:text-gray-300 transition-colors cursor-pointer font-medium">
                   Home
                 </span>
+              </Link>
+              <Link href="/lyrics-generator">
+                <button className="btn-primary text-sm py-2 px-4">
+                  Free Lyrics
+                </button>
               </Link>
               <Link href="/blog">
                 <span className="text-white hover:text-gray-300 transition-colors cursor-pointer font-medium">

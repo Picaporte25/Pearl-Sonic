@@ -17,6 +17,7 @@
     "date-fns": "^4.1.0",
     "fal": "^0.1.1",
     "gray-matter": "^4.0.3",
+    "groq-sdk": "^1.1.2",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "next": "^16.1.6",
