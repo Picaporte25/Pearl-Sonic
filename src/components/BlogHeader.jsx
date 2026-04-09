@@ -1,17 +1,6 @@
 import Link from 'next/link';
-import { useUser } from '@/contexts/UserContext';
 
-export default function Header({ user: userProp = null, credits: creditsProp = 0 }) {
-  const { user: contextUser, logout } = useUser();
-
-  // Context takes priority over props (real-time updates)
-  const user = contextUser || userProp;
-  const credits = contextUser?.credits ?? creditsProp;
-
-  const handleLogout = () => {
-    logout();
-  };
-
+export default function BlogHeader({ user = null, credits = 0 }) {
   return (
     <header className="bg-[#111111]/80 backdrop-blur-xl border-b border-[#333333] sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,9 +12,11 @@ export default function Header({ user: userProp = null, credits: creditsProp = 0
               <button className="window-button window-button-minimize" />
               <button className="window-button window-button-maximize" />
             </div>
-            <span className="text-xl font-bold text-white">
-              Pearl-Sonic
-            </span>
+            <Link href="/">
+              <span className="text-xl font-bold text-white cursor-pointer hover:text-gray-300 transition-colors">
+                Pearl-Sonic
+              </span>
+            </Link>
           </div>
 
           {/* Navigation */}
@@ -47,13 +38,8 @@ export default function Header({ user: userProp = null, credits: creditsProp = 0
                 </span>
               </Link>
               <Link href="/blog">
-                <span className="text-white hover:text-gray-300 transition-colors cursor-pointer font-medium">
+                <span className="text-gray-300 hover:text-white transition-colors cursor-pointer font-medium">
                   Blog
-                </span>
-              </Link>
-              <Link href="/profile">
-                <span className="text-white hover:text-gray-300 transition-colors cursor-pointer font-medium">
-                  Profile
                 </span>
               </Link>
 
@@ -65,7 +51,7 @@ export default function Header({ user: userProp = null, credits: creditsProp = 0
                 <span className="font-semibold text-white">{credits}</span>
               </div>
 
-              {/* Buy Credits Button - Paddle Checkout */}
+              {/* Buy Credits Button */}
               <Link href="/checkout-paddle">
                 <button className="btn-outline text-sm py-2 px-4">
                   + Credits
@@ -73,15 +59,16 @@ export default function Header({ user: userProp = null, credits: creditsProp = 0
               </Link>
 
               {/* Logout */}
-              <button
-                onClick={handleLogout}
-                className="text-gray-400 hover:text-white transition-colors"
-                aria-label="Logout"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3 3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-              </button>
+              <Link href="/api/auth/logout">
+                <button
+                  className="text-gray-400 hover:text-white transition-colors"
+                  aria-label="Logout"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3 3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                </button>
+              </Link>
             </nav>
           ) : (
             <nav className="flex items-center space-x-4">
@@ -91,7 +78,7 @@ export default function Header({ user: userProp = null, credits: creditsProp = 0
                 </span>
               </Link>
               <Link href="/blog">
-                <span className="text-white hover:text-gray-300 transition-colors cursor-pointer font-medium">
+                <span className="text-gray-300 hover:text-white transition-colors cursor-pointer font-medium">
                   Blog
                 </span>
               </Link>

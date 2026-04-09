@@ -20,7 +20,7 @@ export default function Home({ user, credits }) {
       <SEOHead
         title="Pearl-Sonic - Create Music with AI"
         description="Create original music with AI using Pearl-Sonic. Generate professional royalty-free songs in seconds with artificial intelligence. Perfect for YouTube, podcasts, and commercial use."
-        keywords="AI music generator, create music with AI, artificial intelligence music, free AI music, music generation, AI song creator, royalty free music, Pearl-Sonic, AI music for YouTube, podcast music generator"
+        keywords="AI music generator, create music with AI, artificial intelligence music, free AI music, music generation, AI song creator, royalty free music, copyright-free music, AI music without copyright, content creator music, avoid YouTube copyright strikes, pay-per-use AI music, AI music for YouTube, podcast music generator, AI music for TikTok, Instagram background music, AI music vs Suno, affordable AI music, AI music credits, copyright-free songs, AI music generator no subscription, AI music for social media, commercial use AI music, license-free AI music, Pearl-Sonic"
         canonicalUrl="https://pearl-sonic.vercel.app"
       />
       <Layout title="Pearl-Sonic - Create Music with AI" user={user} credits={credits}>
