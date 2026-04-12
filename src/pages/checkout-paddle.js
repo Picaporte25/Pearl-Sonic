@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '@/components/Layout';
 import { getUserFromToken } from '@/lib/auth';
-import { PADDLE_PRICES_ONETIME, formatPrice } from '@/lib/paddle';
+import { PADDLE_PRICES_ONETIME, formatPrice, getEstimatedTracks } from '@/lib/paddle';
 import { useUser } from '@/contexts/UserContext';
 
 export async function getServerSideProps(context) {
@@ -128,7 +128,7 @@ export default function PaddleCheckoutPage({ user: serverUser, credits: serverCr
               <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">
                 {plan.credits}
               </div>
-              <p className="text-gray-500 mb-6">credits ({Math.floor(plan.credits / 60)}m of audio)</p>
+              <p className="text-gray-500 mb-6">credits ({getEstimatedTracks(plan.credits)})</p>
               <div className="text-2xl font-medium text-white mb-6">
                 {formatPrice(plan.price)}
               </div>

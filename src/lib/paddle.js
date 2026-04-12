@@ -86,3 +86,10 @@ export const formatPrice = (price, currency = 'USD') => {
 export const getOneTimePlan = (planName) => {
   return PADDLE_PRICES_ONETIME.find(p => p.name === planName);
 };
+
+// Calculate estimated tracks from credits (15-second blocks)
+export const getEstimatedTracks = (credits) => {
+  const minTracks = Math.floor(credits / 30); // Longer tracks (30 credits each)
+  const maxTracks = Math.floor(credits / 15); // Shorter tracks (15 credits each)
+  return `~${minTracks}-${maxTracks} tracks`;
+};

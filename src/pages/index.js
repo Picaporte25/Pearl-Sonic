@@ -3,6 +3,7 @@ import Layout from '@/components/Layout';
 import { getUserFromToken } from '@/lib/auth';
 import SEOHead from '@/components/SEOHead';
 import LyricsGenerator from '@/components/LyricsGenerator';
+import { getEstimatedTracks } from '@/lib/paddle';
 
 export async function getServerSideProps(context) {
   const user = await getUserFromToken(context);
@@ -331,7 +332,7 @@ export default function Home({ user, credits }) {
                 <div className="text-4xl font-medium bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 bg-clip-text text-transparent mb-2">
                   {plan.credits}
                 </div>
-                <p className="text-gray-500 mb-6">credits ({Math.floor(plan.credits / 60)}m of audio)</p>
+                <p className="text-gray-500 mb-6">credits ({getEstimatedTracks(plan.credits)})</p>
                 <div className="text-2xl font-medium text-white mb-6">${plan.price}</div>
                 <Link href={user ? '/checkout-paddle' : '/login'}>
                   <button className={`${plan.popular ? 'btn-primary' : 'btn-outline'} w-full`}>
