@@ -40,10 +40,10 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Calculate credits needed: 1 credit = 1 second
+    // Calculate credits needed in 15-second blocks: 0-14s=15, 15-29s=30, 30-44s=45, etc.
     const finalDuration = duration || DEFAULT_DURATION;
     const durationSeconds = Math.ceil(finalDuration / 1000);
-    const creditsNeeded = durationSeconds;
+    const creditsNeeded = Math.floor(durationSeconds / 15) * 15 + 15;
 
     // Check credits
     if (user.credits < creditsNeeded) {

@@ -43,8 +43,8 @@ export default function MusicGenerator({ userCredits, onCreditUpdate }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // 1 credit = 1 second
-  const creditsNeeded = duration;
+  // Calculate credits in 15-second blocks: 0-14s=15, 15-29s=30, 30-44s=45, etc.
+  const creditsNeeded = Math.floor(duration / 15) * 15 + 15;
   const hasEnoughCredits = userCredits >= creditsNeeded;
 
   const handleSubmit = async (e) => {
